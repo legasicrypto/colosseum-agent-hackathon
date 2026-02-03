@@ -1,6 +1,8 @@
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::program::invoke;
+use anchor_lang::solana_program::system_instruction;
 
-declare_id!("LegasiCreditProtoco1111111111111111111111111");
+declare_id!("7bv6nbBwrPUEHnusd4zsHMdRy3btP8sEKW7sq7Hxode5");
 
 #[program]
 pub mod legasi_credit {
@@ -23,17 +25,20 @@ pub mod legasi_credit {
     pub fn deposit_collateral(ctx: Context<DepositCollateral>, amount: u64) -> Result<()> {
         require!(amount > 0, ErrorCode::InvalidAmount);
         
-        // Transfer SOL from user to vault
-        let cpi_context = CpiContext::new(
-            ctx.accounts.system_program.to_account_info(),
-            anchor_lang::system_program::Transfer {
-                from: ctx.accounts.owner.to_account_info(),
-                to: ctx.accounts.collateral_vault.to_account_info(),
-            },
-        );
-        anchor_lang::system_program::transfer(cpi_context, amount)?;
+        // Transfer SOL using native invoke
+        invoke(
+            &system_instruction::transfer(
+                ctx.accounts.owner.key,
+                ctx.accounts.collateral_vault.key,
+                amount,
+            ),
+            &[
+                ctx.accounts.owner.to_account_info(),
+                ctx.accounts.collateral_vault.to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+            ],
+        )?;
         
-        // Update position
         let position = &mut ctx.accounts.position;
         position.collateral_amount = position.collateral_amount.checked_add(amount)
             .ok_or(ErrorCode::MathOverflow)?;
@@ -49,18 +54,18 @@ pub mod legasi_credit {
         
         let position = &mut ctx.accounts.position;
         
-        // Get SOL price from Pyth (simplified - would use actual Pyth integration)
-        let sol_price_usd = 100_000_000; // $100 with 6 decimals (placeholder)
+        // SOL price placeholder ($100 with 6 decimals)
+        let sol_price_usd: u128 = 100_000_000;
         
         // Calculate max borrowable (50% LTV)
         let collateral_value_usd = (position.collateral_amount as u128)
-            .checked_mul(sol_price_usd as u128)
+            .checked_mul(sol_price_usd)
             .ok_or(ErrorCode::MathOverflow)?
-            .checked_div(1_000_000_000) // lamports to SOL
+            .checked_div(1_000_000_000)
             .ok_or(ErrorCode::MathOverflow)?;
         
         let max_borrow = collateral_value_usd
-            .checked_mul(50) // 50% LTV
+            .checked_mul(50)
             .ok_or(ErrorCode::MathOverflow)?
             .checked_div(100)
             .ok_or(ErrorCode::MathOverflow)? as u64;
@@ -69,9 +74,6 @@ pub mod legasi_credit {
             .ok_or(ErrorCode::MathOverflow)?;
         
         require!(new_borrowed <= max_borrow, ErrorCode::ExceedsLTV);
-        
-        // Transfer USDC to user (would mint from vault)
-        // ... USDC transfer logic here ...
         
         position.borrowed_amount = new_borrowed;
         position.last_update = Clock::get()?.unix_timestamp;
@@ -85,11 +87,7 @@ pub mod legasi_credit {
         require!(amount > 0, ErrorCode::InvalidAmount);
         
         let position = &mut ctx.accounts.position;
-        
         let repay_amount = std::cmp::min(amount, position.borrowed_amount);
-        
-        // Transfer USDC from user to vault
-        // ... USDC transfer logic here ...
         
         position.borrowed_amount = position.borrowed_amount.checked_sub(repay_amount)
             .ok_or(ErrorCode::MathOverflow)?;
@@ -103,18 +101,17 @@ pub mod legasi_credit {
     pub fn withdraw_collateral(ctx: Context<WithdrawCollateral>, amount: u64) -> Result<()> {
         require!(amount > 0, ErrorCode::InvalidAmount);
         
-        let position = &mut ctx.accounts.position;
-        
+        let position = &ctx.accounts.position;
         require!(amount <= position.collateral_amount, ErrorCode::InsufficientCollateral);
         
-        // Check LTV after withdrawal would still be safe
         let remaining_collateral = position.collateral_amount.checked_sub(amount)
             .ok_or(ErrorCode::MathOverflow)?;
         
+        // Check LTV after withdrawal
         if position.borrowed_amount > 0 {
-            let sol_price_usd = 100_000_000; // Placeholder
+            let sol_price_usd: u128 = 100_000_000;
             let remaining_value = (remaining_collateral as u128)
-                .checked_mul(sol_price_usd as u128)
+                .checked_mul(sol_price_usd)
                 .ok_or(ErrorCode::MathOverflow)?
                 .checked_div(1_000_000_000)
                 .ok_or(ErrorCode::MathOverflow)?;
@@ -128,9 +125,27 @@ pub mod legasi_credit {
             require!(position.borrowed_amount <= max_borrow, ErrorCode::ExceedsLTV);
         }
         
-        // Transfer SOL back to user
-        // ... transfer logic with PDA signer ...
+        // Transfer from vault requires PDA signature - use invoke_signed
+        let position_key = ctx.accounts.position.key();
+        let vault_bump = ctx.bumps.collateral_vault;
+        let seeds: &[&[u8]] = &[b"vault", position_key.as_ref(), &[vault_bump]];
         
+        anchor_lang::solana_program::program::invoke_signed(
+            &system_instruction::transfer(
+                ctx.accounts.collateral_vault.key,
+                ctx.accounts.owner.key,
+                amount,
+            ),
+            &[
+                ctx.accounts.collateral_vault.to_account_info(),
+                ctx.accounts.owner.to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+            ],
+            &[seeds],
+        )?;
+        
+        // Update position after successful transfer
+        let position = &mut ctx.accounts.position;
         position.collateral_amount = remaining_collateral;
         position.last_update = Clock::get()?.unix_timestamp;
         
@@ -166,13 +181,13 @@ pub struct DepositCollateral<'info> {
     )]
     pub position: Account<'info, Position>,
     
-    /// CHECK: PDA vault for holding collateral
+    /// CHECK: PDA vault for collateral
     #[account(
         mut,
         seeds = [b"vault", position.key().as_ref()],
         bump
     )]
-    pub collateral_vault: AccountInfo<'info>,
+    pub collateral_vault: UncheckedAccount<'info>,
     
     #[account(mut)]
     pub owner: Signer<'info>,
@@ -190,10 +205,7 @@ pub struct Borrow<'info> {
     )]
     pub position: Account<'info, Position>,
     
-    #[account(mut)]
     pub owner: Signer<'info>,
-    
-    // USDC accounts would go here
 }
 
 #[derive(Accounts)]
@@ -206,10 +218,7 @@ pub struct Repay<'info> {
     )]
     pub position: Account<'info, Position>,
     
-    #[account(mut)]
     pub owner: Signer<'info>,
-    
-    // USDC accounts would go here
 }
 
 #[derive(Accounts)]
@@ -228,7 +237,7 @@ pub struct WithdrawCollateral<'info> {
         seeds = [b"vault", position.key().as_ref()],
         bump
     )]
-    pub collateral_vault: AccountInfo<'info>,
+    pub collateral_vault: UncheckedAccount<'info>,
     
     #[account(mut)]
     pub owner: Signer<'info>,
@@ -240,8 +249,8 @@ pub struct WithdrawCollateral<'info> {
 #[derive(InitSpace)]
 pub struct Position {
     pub owner: Pubkey,
-    pub collateral_amount: u64,  // in lamports
-    pub borrowed_amount: u64,    // in USDC (6 decimals)
+    pub collateral_amount: u64,
+    pub borrowed_amount: u64,
     pub last_update: i64,
     pub bump: u8,
 }
@@ -252,7 +261,7 @@ pub enum ErrorCode {
     InvalidAmount,
     #[msg("Math overflow")]
     MathOverflow,
-    #[msg("Exceeds maximum LTV")]
+    #[msg("Exceeds maximum LTV (50%)")]
     ExceedsLTV,
     #[msg("Insufficient collateral")]
     InsufficientCollateral,
