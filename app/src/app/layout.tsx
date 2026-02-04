@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "@/components/Providers";
+import { WalletProvider } from "@/components/providers/WalletProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -84,7 +84,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} bg-[#0a0a0f] text-white antialiased`}>
-        <Providers>{children}</Providers>
+        <WalletProvider>{children}</WalletProvider>
       </body>
     </html>
   );
