@@ -1,65 +1,177 @@
-import Image from "next/image";
+'use client';
+
+import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import Link from 'next/link';
 
 export default function Home() {
+  const { connected } = useWallet();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="flex flex-col min-h-screen">
+      {/* Navigation */}
+      <nav className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            Legasi
+          </span>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link href="/app" className="text-white/70 hover:text-white transition">
+            App
+          </Link>
+          <Link href="https://docs.legasi.io" className="text-white/70 hover:text-white transition">
+            Docs
+          </Link>
+          <WalletMultiButton />
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="flex flex-col items-center justify-center flex-1 px-6 py-24 text-center">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+            Credit Infrastructure for{' '}
+            <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              Digital Assets
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          
+          <p className="text-xl md:text-2xl text-white/70 max-w-2xl mx-auto">
+            Borrow against your crypto with <strong className="text-white">Gradual Auto-Deleverage</strong> protection. 
+            No liquidation cliff. Sleep soundly.
           </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            {connected ? (
+              <Link
+                href="/app"
+                className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl font-semibold text-lg hover:opacity-90 transition"
+              >
+                Launch App →
+              </Link>
+            ) : (
+              <WalletMultiButton className="!bg-gradient-to-r !from-blue-500 !to-purple-600 !rounded-xl !font-semibold !text-lg !px-8 !py-4" />
+            )}
+            <Link
+              href="#features"
+              className="px-8 py-4 border border-white/20 rounded-xl font-semibold text-lg hover:bg-white/5 transition"
+            >
+              Learn More
+            </Link>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-8 pt-12 max-w-xl mx-auto">
+            <div>
+              <div className="text-3xl font-bold text-blue-400">$0</div>
+              <div className="text-sm text-white/50">Total Value Locked</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-purple-400">0</div>
+              <div className="text-sm text-white/50">Forced Liquidations</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-pink-400">7%+</div>
+              <div className="text-sm text-white/50">LP Yield</div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="px-6 py-24 bg-white/5">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+            Why Legasi?
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <FeatureCard
+              icon="🛡️"
+              title="Gradual Auto-Deleverage"
+              description="No sudden liquidations. GAD smoothly reduces your position when LTV exceeds threshold, protecting your capital."
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <FeatureCard
+              icon="⚡"
+              title="eMode for Correlated Assets"
+              description="Up to 97% LTV on stablecoins, 93% on SOL/JitoSOL. Maximum capital efficiency for sophisticated users."
+            />
+            <FeatureCard
+              icon="🔄"
+              title="One-Click Leverage"
+              description="Go 2-5x long or short in a single transaction. Jupiter integration for optimal swaps."
+            />
+            <FeatureCard
+              icon="💰"
+              title="Auto-Stake Jito"
+              description="Deposited SOL automatically earns ~7% APY through Jito staking while serving as collateral."
+            />
+            <FeatureCard
+              icon="⚡"
+              title="Flash Loans"
+              description="0.05% fee flash loans for arbitrage, liquidations, and position management."
+            />
+            <FeatureCard
+              icon="📊"
+              title="On-Chain Reputation"
+              description="Build your credit score on-chain. Better reputation = higher LTV limits."
+            />
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* CTA Section */}
+      <section className="px-6 py-24">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <h2 className="text-3xl md:text-4xl font-bold">
+            Ready to Experience DeFi Without the Cliff?
+          </h2>
+          <p className="text-xl text-white/70">
+            Join the waitlist for early access and exclusive benefits.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="px-6 py-4 bg-white/10 rounded-xl border border-white/20 focus:border-blue-400 focus:outline-none w-full sm:w-80"
+            />
+            <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl font-semibold hover:opacity-90 transition">
+              Join Waitlist
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="px-6 py-8 border-t border-white/10">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-white/50">
+            © 2026 Legasi. Built on Solana.
+          </div>
+          <div className="flex gap-6">
+            <Link href="https://twitter.com/legasicrypto" className="text-white/50 hover:text-white transition">
+              Twitter
+            </Link>
+            <Link href="https://discord.gg/legasi" className="text-white/50 hover:text-white transition">
+              Discord
+            </Link>
+            <Link href="https://github.com/legasicrypto" className="text-white/50 hover:text-white transition">
+              GitHub
+            </Link>
+          </div>
+        </div>
+      </footer>
+    </main>
+  );
+}
+
+function FeatureCard({ icon, title, description }: { icon: string; title: string; description: string }) {
+  return (
+    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition">
+      <div className="text-4xl mb-4">{icon}</div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-white/60">{description}</p>
     </div>
   );
 }

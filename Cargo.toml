@@ -6,7 +6,7 @@ members = [
     "programs/legasi-lp",
     "programs/legasi-flash",
     "programs/legasi-leverage",
-    "programs/legasi-staking",
+    # "programs/legasi-staking",  # TODO: fix seeds
 ]
 resolver = "2"
 
