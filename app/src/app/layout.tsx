@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Legasi | Agentic Credit Infrastructure",
     description: "The first lending protocol where AI agents are first-class citizens.",
-    creator: "@legaborateur",
+    creator: "@legasi_xyz",
     images: ["/og-image.png"],
   },
   robots: {

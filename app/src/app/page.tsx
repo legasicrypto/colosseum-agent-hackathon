@@ -279,7 +279,7 @@ export default function Home() {
             <span className="text-white/60">Built by Bouliche 🎱 for Colosseum</span>
           </div>
           <div className="flex gap-6">
-            <a href="https://twitter.com/legaborateur" target="_blank" className="text-white/40 hover:text-white transition">
+            <a href="https://x.com/legasi_xyz" target="_blank" className="text-white/40 hover:text-white transition">
               Twitter
             </a>
             <a href="https://github.com/legasicrypto/colosseum-agent-hackathon" target="_blank" className="text-white/40 hover:text-white transition">
