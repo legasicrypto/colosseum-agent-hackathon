@@ -11,3 +11,5 @@ node_modules/
 
 # Anchor
 .anchor/
+sdk/node_modules
+sdk/dist
