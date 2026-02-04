@@ -4,7 +4,7 @@ use anchor_lang::solana_program::program::invoke_signed;
 use anchor_lang::solana_program::system_instruction;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer, MintTo, Burn};
 
-declare_id!("7bv6nbBwrPUEHnusd4zsHMdRy3btP8sEKW7sq7Hxode5");
+declare_id!("FH8VWbL8nbjU2wU7uauc883Z11wdxtjr8GKfvamPR5Lf");
 
 // Constants
 const MAX_LTV_BPS: u64 = 5000; // 50% max LTV
@@ -79,7 +79,7 @@ pub mod legasi_credit {
         // Transfer USDC from user to vault
         token::transfer(
             CpiContext::new(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 Transfer {
                     from: ctx.accounts.user_usdc.to_account_info(),
                     to: ctx.accounts.usdc_vault.to_account_info(),
@@ -95,7 +95,7 @@ pub mod legasi_credit {
         
         token::mint_to(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 MintTo {
                     mint: ctx.accounts.busdc_mint.to_account_info(),
                     to: ctx.accounts.user_busdc.to_account_info(),
@@ -142,7 +142,7 @@ pub mod legasi_credit {
         // Burn bUSDC
         token::burn(
             CpiContext::new(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 Burn {
                     mint: ctx.accounts.busdc_mint.to_account_info(),
                     from: ctx.accounts.user_busdc.to_account_info(),
@@ -158,7 +158,7 @@ pub mod legasi_credit {
         
         token::transfer(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 Transfer {
                     from: ctx.accounts.usdc_vault.to_account_info(),
                     to: ctx.accounts.user_usdc.to_account_info(),
@@ -284,7 +284,7 @@ pub mod legasi_credit {
         
         token::transfer(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 Transfer {
                     from: ctx.accounts.usdc_vault.to_account_info(),
                     to: ctx.accounts.user_usdc.to_account_info(),
@@ -316,7 +316,7 @@ pub mod legasi_credit {
         // Transfer USDC
         token::transfer(
             CpiContext::new(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 Transfer {
                     from: ctx.accounts.user_usdc.to_account_info(),
                     to: ctx.accounts.usdc_vault.to_account_info(),
@@ -407,7 +407,7 @@ pub mod legasi_credit {
         
         token::transfer(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 Transfer {
                     from: ctx.accounts.usdc_vault.to_account_info(),
                     to: ctx.accounts.user_usdc.to_account_info(),
@@ -429,7 +429,7 @@ pub mod legasi_credit {
         
         token::transfer(
             CpiContext::new(
-                ctx.accounts.token_program.key(),
+                ctx.accounts.token_program.to_account_info(),
                 Transfer {
                     from: ctx.accounts.user_usdc.to_account_info(),
                     to: ctx.accounts.usdc_vault.to_account_info(),
