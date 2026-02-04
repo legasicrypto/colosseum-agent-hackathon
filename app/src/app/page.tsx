@@ -108,20 +108,15 @@ export default function Home() {
               <span className="text-sm font-medium">Solana</span>
             </div>
             
-            {/* Anchor Logo */}
+            {/* Anchor Logo - Coral/Anchor GitHub */}
             <div className="flex items-center gap-3 text-[#5a5a5a] hover:text-[#8a8a8a] transition">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C11.4 2 11 2.4 11 3C11 3.6 11.4 4 12 4C12.6 4 13 3.6 13 3C13 2.4 12.6 2 12 2ZM12 5C10.3 5 9 6.3 9 8H15C15 6.3 13.7 5 12 5ZM6.3 9L4.7 15.6C4.6 16.1 4.8 16.6 5.2 16.9C5.6 17.2 6.1 17.2 6.6 17L8 16.3V22H10V15L12 14L14 15V22H16V16.3L17.4 17C17.9 17.2 18.4 17.2 18.8 16.9C19.2 16.6 19.4 16.1 19.3 15.6L17.7 9H6.3Z"/>
-              </svg>
+              <img src="https://avatars.githubusercontent.com/u/76976856?s=64" alt="Anchor" className="w-7 h-7 rounded" />
               <span className="text-sm font-medium">Anchor</span>
             </div>
 
-            {/* Pyth Logo */}
+            {/* Pyth Logo - Pyth Network */}
             <div className="flex items-center gap-3 text-[#5a5a5a] hover:text-[#8a8a8a] transition">
-              <svg width="28" height="28" viewBox="0 0 100 100" fill="currentColor">
-                <path d="M50 5L90 27.5V72.5L50 95L10 72.5V27.5L50 5ZM50 15L20 32.5V67.5L50 85L80 67.5V32.5L50 15Z"/>
-                <path d="M50 25L70 37.5V62.5L50 75L30 62.5V37.5L50 25Z"/>
-              </svg>
+              <img src="https://avatars.githubusercontent.com/u/90330562?s=64" alt="Pyth" className="w-7 h-7 rounded" />
               <span className="text-sm font-medium">Pyth</span>
             </div>
           </div>
