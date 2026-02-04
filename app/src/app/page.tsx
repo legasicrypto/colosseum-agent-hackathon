@@ -99,22 +99,22 @@ export default function Home() {
           <p className="text-center text-xs text-[#5a6a78] uppercase tracking-wider mb-8">Powered by</p>
           <div className="flex justify-center items-center gap-16">
             {/* Solana Logo */}
-            <div className="flex items-center gap-3 text-[#5a6a78] hover:text-[#8a9aa8] transition">
+            <a href="https://solana.com/" target="_blank" className="flex items-center gap-3 text-[#5a6a78] hover:text-[#8a9aa8] transition">
               <img src="/solana-logo.svg" alt="Solana" className="h-8 w-auto" />
               <span className="text-sm font-medium">Solana</span>
-            </div>
+            </a>
             
             {/* Pyth Logo */}
-            <div className="flex items-center gap-3 text-[#5a6a78] hover:text-[#8a9aa8] transition">
+            <a href="https://www.pyth.network/" target="_blank" className="flex items-center gap-3 text-[#5a6a78] hover:text-[#8a9aa8] transition">
               <img src="/pyth-logo.svg" alt="Pyth" className="h-8 w-auto" />
               <span className="text-sm font-medium">Pyth</span>
-            </div>
+            </a>
 
             {/* Jupiter Logo */}
-            <div className="flex items-center gap-3 text-[#5a6a78] hover:text-[#8a9aa8] transition">
+            <a href="https://jup.ag/" target="_blank" className="flex items-center gap-3 text-[#5a6a78] hover:text-[#8a9aa8] transition">
               <img src="/jupiter-logo.svg" alt="Jupiter" className="h-8 w-auto" />
               <span className="text-sm font-medium">Jupiter</span>
-            </div>
+            </a>
           </div>
         </div>
       </section>
