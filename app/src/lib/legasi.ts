@@ -118,9 +118,9 @@ export class LegasiClient {
     const [positionPDA] = getPositionPDA(owner);
     
     try {
-      const position = await this.lendingProgram.account.position.fetch(positionPDA);
-      return position as unknown as Position;
-    } catch {
+      const position = await (this.lendingProgram.account as any).position.fetch(positionPDA);
+      return position as Position;
+    } catch (e) {
       return null;
     }
   }
