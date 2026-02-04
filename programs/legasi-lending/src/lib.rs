@@ -6,6 +6,9 @@ use anchor_spl::token::{self, Token, TokenAccount, Transfer, Mint};
 
 use legasi_core::{state::*, errors::LegasiError, constants::*};
 
+pub mod x402;
+pub use x402::*;
+
 declare_id!("DGRYqD9Hg9v27Fa9kLUUf3KY9hoprjBQp7y88qG9q88u");
 
 #[program]
@@ -618,6 +621,127 @@ pub mod legasi_lending {
         msg!("Agent auto-repaid {} USDC", amount.saturating_sub(remaining));
         Ok(())
     }
+
+    // ========== x402 PAYMENT FUNCTIONS ==========
+
+    /// Process an x402 payment request
+    /// Agent pays for a service, borrowing if needed
+    pub fn x402_pay(
+        ctx: Context<X402Pay>,
+        payment_request: X402PaymentRequest,
+        auto_borrow: bool,  // Borrow if insufficient balance
+    ) -> Result<()> {
+        let now = Clock::get()?.unix_timestamp;
+        
+        // Verify request is valid
+        require!(payment_request.is_valid(now), LegasiError::InvalidAmount);
+        require!(ctx.accounts.agent_config.x402_enabled, LegasiError::Unauthorized);
+        
+        let amount = payment_request.amount;
+        
+        // Check agent has enough balance
+        let agent_balance = ctx.accounts.agent_token_account.amount;
+        
+        if agent_balance < amount && auto_borrow {
+            // Need to borrow the difference
+            let borrow_amount = amount.saturating_sub(agent_balance);
+            
+            // Check daily limit
+            require!(
+                ctx.accounts.agent_config.can_borrow(borrow_amount, now),
+                LegasiError::ExceedsLTV
+            );
+            
+            // Borrow from pool
+            let pool_bump = ctx.accounts.lp_pool.bump;
+            let borrowable_mint = ctx.accounts.lp_pool.borrowable_mint;
+            let seeds: &[&[u8]] = &[b"lp_pool", borrowable_mint.as_ref(), &[pool_bump]];
+
+            token::transfer(
+                CpiContext::new_with_signer(
+                    ctx.accounts.token_program.to_account_info(),
+                    Transfer {
+                        from: ctx.accounts.borrow_vault.to_account_info(),
+                        to: ctx.accounts.agent_token_account.to_account_info(),
+                        authority: ctx.accounts.lp_pool.to_account_info(),
+                    },
+                    &[seeds],
+                ),
+                borrow_amount,
+            )?;
+            
+            // Update position debt
+            let position = &mut ctx.accounts.position;
+            let asset_type = AssetType::USDC;
+            
+            let mut found = false;
+            for borrow in position.borrows.iter_mut() {
+                if borrow.asset_type == asset_type {
+                    borrow.amount = borrow.amount.checked_add(borrow_amount).ok_or(LegasiError::MathOverflow)?;
+                    found = true;
+                    break;
+                }
+            }
+            if !found {
+                position.borrows.push(BorrowedAmount {
+                    asset_type,
+                    amount: borrow_amount,
+                    accrued_interest: 0,
+                });
+            }
+            
+            // Update agent config
+            let agent_config = &mut ctx.accounts.agent_config;
+            agent_config.record_borrow(borrow_amount, now);
+            
+            // Update pool
+            let lp_pool = &mut ctx.accounts.lp_pool;
+            lp_pool.total_borrowed = lp_pool.total_borrowed.checked_add(borrow_amount).ok_or(LegasiError::MathOverflow)?;
+        }
+        
+        // Now pay the recipient
+        token::transfer(
+            CpiContext::new(
+                ctx.accounts.token_program.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.agent_token_account.to_account_info(),
+                    to: ctx.accounts.recipient_token_account.to_account_info(),
+                    authority: ctx.accounts.agent.to_account_info(),
+                },
+            ),
+            amount,
+        )?;
+        
+        // Create receipt
+        let receipt = &mut ctx.accounts.receipt;
+        receipt.payment_id = payment_request.payment_id;
+        receipt.payer = ctx.accounts.agent.key();
+        receipt.recipient = payment_request.recipient;
+        receipt.amount = amount;
+        receipt.paid_at = now;
+        receipt.tx_signature = [0u8; 64]; // Filled by runtime
+        receipt.bump = ctx.bumps.receipt;
+
+        emit!(X402PaymentMade {
+            payer: ctx.accounts.agent.key(),
+            recipient: payment_request.recipient,
+            amount,
+            payment_id: payment_request.payment_id,
+            borrowed: agent_balance < amount,
+        });
+
+        msg!("x402 payment: {} to {}", amount, payment_request.recipient);
+        Ok(())
+    }
+}
+
+#[event]
+pub struct X402PaymentMade {
+    pub payer: Pubkey,
+    pub recipient: Pubkey,
+    pub amount: u64,
+    pub payment_id: [u8; 32],
+    pub borrowed: bool,
 }
 
 #[event]
@@ -880,4 +1004,54 @@ pub struct AgentAutoRepay<'info> {
     #[account(constraint = agent.key() == position.owner)]
     pub agent: Signer<'info>,
     pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+#[instruction(payment_request: X402PaymentRequest)]
+pub struct X402Pay<'info> {
+    #[account(
+        mut,
+        seeds = [b"position", position.owner.as_ref()],
+        bump = position.bump
+    )]
+    pub position: Account<'info, Position>,
+    #[account(
+        mut,
+        seeds = [b"agent_config", position.key().as_ref()],
+        bump = agent_config.bump,
+        constraint = agent_config.position == position.key()
+    )]
+    pub agent_config: Account<'info, AgentConfig>,
+    #[account(
+        mut,
+        seeds = [b"lp_pool", lp_pool.borrowable_mint.as_ref()],
+        bump = lp_pool.bump
+    )]
+    pub lp_pool: Account<'info, LpPool>,
+    #[account(
+        mut,
+        seeds = [b"lp_vault", lp_pool.borrowable_mint.as_ref()],
+        bump
+    )]
+    pub borrow_vault: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub agent_token_account: Account<'info, TokenAccount>,
+    #[account(
+        mut,
+        constraint = recipient_token_account.owner == payment_request.recipient
+    )]
+    pub recipient_token_account: Account<'info, TokenAccount>,
+    #[account(
+        init,
+        payer = agent,
+        space = 8 + X402Receipt::INIT_SPACE,
+        seeds = [b"x402_receipt", payment_request.payment_id.as_ref()],
+        bump
+    )]
+    pub receipt: Account<'info, X402Receipt>,
+    /// The agent making the payment
+    #[account(mut, constraint = agent.key() == position.owner)]
+    pub agent: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
 }
