@@ -16,22 +16,22 @@ export const LEGASI_LENDING_PROGRAM_ID = new PublicKey(
 
 /** Legasi LP program - liquidity pools, bUSDC token */
 export const LEGASI_LP_PROGRAM_ID = new PublicKey(
-  'LPsqRQCNLgAH3ZgBPL7JcLMPh3hZ3JKVqQ3EFpmYvrF'  // Update with actual
+  '4g7FgDLuxXJ7fRa57m8SV3gjznMZ9KUjcdJfg1b6BfPF'
 );
 
 /** Legasi GAD program - Gradual Adjustment Damage mechanism */
 export const LEGASI_GAD_PROGRAM_ID = new PublicKey(
-  'GAD1111111111111111111111111111111111111111'  // Update with actual
+  'Ed7pfvjR1mRWmzHP3r1NvukESGr38xZKwpoQ5jGSAVad'
 );
 
 /** Legasi Flash program - flash loans */
 export const LEGASI_FLASH_PROGRAM_ID = new PublicKey(
-  'FLASH11111111111111111111111111111111111111'  // Update with actual
+  '24zjRceYHjkyP8Nr4bc4q9T7TBbkf292gFocGp6SM5Fz'
 );
 
 /** Legasi Leverage program - leverage operations */
 export const LEGASI_LEVERAGE_PROGRAM_ID = new PublicKey(
-  'LEV1111111111111111111111111111111111111111'  // Update with actual
+  'G9iVPMnf4kiRKr59tn1t7m5W4WK2KveFLzANX4bbHtjA'
 );
 
 // ============================================================================

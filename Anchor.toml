@@ -25,7 +25,7 @@ legasi_lp = "4g7FgDLuxXJ7fRa57m8SV3gjznMZ9KUjcdJfg1b6BfPF"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
