@@ -35,28 +35,31 @@ export default function Dashboard() {
 
   if (!connected) {
     return (
-      <div className="min-h-screen bg-[#0c0c0f] text-white flex flex-col">
+      <div className="min-h-screen bg-[#001520] text-white flex flex-col gradient-bg">
         <Nav />
         <div className="flex-1 flex flex-col items-center justify-center px-6">
-          <img src="/logo-white.png" alt="Legasi" className="w-16 h-16 mb-6" />
-          <h1 className="text-2xl font-semibold mb-3">Connect Wallet</h1>
-          <p className="text-[#6a6a6a] mb-8 text-center max-w-sm">
+          <div className="relative">
+            <div className="absolute inset-0 bg-[#FF4E00]/20 rounded-full blur-3xl scale-150"></div>
+            <img src="/logo-white.png" alt="Legasi" className="w-20 h-20 mb-6 relative z-10" />
+          </div>
+          <h1 className="text-3xl font-bold mb-3">Connect Wallet</h1>
+          <p className="text-[#6a7a88] mb-8 text-center max-w-sm">
             Connect your wallet to access the Legasi protocol
           </p>
-          <WalletMultiButton className="!bg-[#00D395] !text-black !font-medium !rounded-lg !h-12 !px-6" />
+          <WalletMultiButton className="!bg-[#FF4E00] !hover:bg-[#E64500] !text-white !font-semibold !rounded-xl !h-14 !px-8 !transition-all" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0c0c0f] text-white">
+    <div className="min-h-screen bg-[#001520] text-white gradient-bg">
       <Nav />
       
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Error */}
         {legasi.error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm animate-fade-in-up">
             {legasi.error}
           </div>
         )}
@@ -68,7 +71,7 @@ export default function Dashboard() {
           <MetricCard 
             label="LTV" 
             value={`${legasi.ltv.toFixed(1)}%`}
-            color={legasi.ltv > 70 ? "#ff6b6b" : legasi.ltv > 50 ? "#ffd93d" : "#00D395"}
+            color={legasi.ltv > 70 ? "#ff6b6b" : legasi.ltv > 50 ? "#ffd93d" : "#FF4E00"}
           />
           <MetricCard 
             label="Reputation" 
@@ -79,13 +82,13 @@ export default function Dashboard() {
 
         {/* Initialize */}
         {!legasi.hasPosition && (
-          <div className="mb-8 p-8 bg-[#111114] border border-[#1a1a1f] rounded-xl text-center">
-            <h2 className="text-xl font-semibold mb-2">Get Started</h2>
-            <p className="text-[#6a6a6a] mb-6">Initialize your position to start using Legasi</p>
+          <div className="mb-8 p-10 bg-[#051525]/80 border border-[#0a2535] rounded-2xl text-center backdrop-blur-sm card-shine">
+            <h2 className="text-2xl font-bold mb-3">Get Started</h2>
+            <p className="text-[#6a7a88] mb-8">Initialize your position to start using Legasi</p>
             <button
               onClick={() => legasi.initializePosition()}
               disabled={legasi.loading}
-              className="h-12 px-8 bg-[#00D395] hover:bg-[#00B380] text-black font-medium rounded-lg transition disabled:opacity-50"
+              className="h-14 px-10 bg-[#FF4E00] hover:bg-[#E64500] text-white font-semibold rounded-xl transition-all hover:scale-105 hover:shadow-xl hover:shadow-[#FF4E00]/30 disabled:opacity-50 glow-btn"
             >
               {legasi.loading ? "Initializing..." : "Initialize Position"}
             </button>
@@ -97,15 +100,15 @@ export default function Dashboard() {
             {/* Main Panel */}
             <div className="lg:col-span-2">
               {/* Tabs */}
-              <div className="flex gap-1 p-1 bg-[#111114] rounded-lg mb-6 w-fit">
+              <div className="flex gap-1 p-1 bg-[#051525] border border-[#0a2535] rounded-xl mb-6 w-fit">
                 {(["supply", "borrow", "agent"] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition ${
+                    className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all ${
                       activeTab === tab
-                        ? "bg-[#1a1a1f] text-white"
-                        : "text-[#6a6a6a] hover:text-white"
+                        ? "bg-[#FF4E00] text-white shadow-lg shadow-[#FF4E00]/20"
+                        : "text-[#6a7a88] hover:text-white hover:bg-[#0a2535]"
                     }`}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -114,11 +117,11 @@ export default function Dashboard() {
               </div>
 
               {/* Content */}
-              <div className="p-6 bg-[#111114] border border-[#1a1a1f] rounded-xl">
+              <div className="p-6 bg-[#051525]/80 border border-[#0a2535] rounded-2xl backdrop-blur-sm card-shine">
                 {activeTab === "supply" && (
                   <div>
-                    <h3 className="text-lg font-medium mb-4">Supply Collateral</h3>
-                    <p className="text-sm text-[#6a6a6a] mb-6">
+                    <h3 className="text-xl font-semibold mb-2">Supply Collateral</h3>
+                    <p className="text-sm text-[#6a7a88] mb-6">
                       Deposit SOL as collateral to borrow against
                     </p>
                     <div className="flex gap-3">
@@ -129,9 +132,9 @@ export default function Dashboard() {
                             placeholder="0.00"
                             value={depositAmount}
                             onChange={(e) => setDepositAmount(e.target.value)}
-                            className="w-full h-12 bg-[#0c0c0f] border border-[#2a2a2f] rounded-lg px-4 pr-16 text-white placeholder-[#4a4a4a] focus:outline-none focus:border-[#00D395] transition"
+                            className="w-full h-14 bg-[#001520] border border-[#0a2535] rounded-xl px-4 pr-16 text-white placeholder-[#3a4a58] focus:outline-none focus:border-[#FF4E00] focus:shadow-lg focus:shadow-[#FF4E00]/10 transition-all"
                           />
-                          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6a6a6a] text-sm">
+                          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6a7a88] text-sm font-medium">
                             SOL
                           </span>
                         </div>
@@ -142,7 +145,7 @@ export default function Dashboard() {
                           setDepositAmount("");
                         }}
                         disabled={legasi.loading || !depositAmount}
-                        className="h-12 px-6 bg-[#00D395] hover:bg-[#00B380] text-black font-medium rounded-lg transition disabled:bg-[#2a2a2f] disabled:text-[#6a6a6a]"
+                        className="h-14 px-8 bg-[#FF4E00] hover:bg-[#E64500] text-white font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100"
                       >
                         Supply
                       </button>
@@ -152,11 +155,11 @@ export default function Dashboard() {
 
                 {activeTab === "borrow" && (
                   <div>
-                    <h3 className="text-lg font-medium mb-4">Borrow</h3>
-                    <p className="text-sm text-[#6a6a6a] mb-6">
+                    <h3 className="text-xl font-semibold mb-2">Borrow</h3>
+                    <p className="text-sm text-[#6a7a88] mb-6">
                       Borrow USDC against your collateral
                     </p>
-                    <div className="flex gap-3 mb-4">
+                    <div className="flex gap-3 mb-6">
                       <div className="flex-1">
                         <div className="relative">
                           <input
@@ -164,9 +167,9 @@ export default function Dashboard() {
                             placeholder="0.00"
                             value={borrowAmount}
                             onChange={(e) => setBorrowAmount(e.target.value)}
-                            className="w-full h-12 bg-[#0c0c0f] border border-[#2a2a2f] rounded-lg px-4 pr-16 text-white placeholder-[#4a4a4a] focus:outline-none focus:border-[#00D395] transition"
+                            className="w-full h-14 bg-[#001520] border border-[#0a2535] rounded-xl px-4 pr-16 text-white placeholder-[#3a4a58] focus:outline-none focus:border-[#FF4E00] focus:shadow-lg focus:shadow-[#FF4E00]/10 transition-all"
                           />
-                          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6a6a6a] text-sm">
+                          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6a7a88] text-sm font-medium">
                             USDC
                           </span>
                         </div>
@@ -177,14 +180,14 @@ export default function Dashboard() {
                           setBorrowAmount("");
                         }}
                         disabled={legasi.loading || !borrowAmount}
-                        className="h-12 px-6 bg-[#00D395] hover:bg-[#00B380] text-black font-medium rounded-lg transition disabled:bg-[#2a2a2f] disabled:text-[#6a6a6a]"
+                        className="h-14 px-8 bg-[#FF4E00] hover:bg-[#E64500] text-white font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100"
                       >
                         Borrow
                       </button>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-[#6a6a6a]">Available</span>
-                      <span className="text-white">
+                    <div className="flex justify-between text-sm p-4 bg-[#001520]/50 rounded-xl">
+                      <span className="text-[#6a7a88]">Available to borrow</span>
+                      <span className="text-[#FF4E00] font-semibold">
                         ${Math.max(0, collateralValue * (0.75 + ltvBonus/100) - borrowedValue).toFixed(2)}
                       </span>
                     </div>
@@ -193,8 +196,8 @@ export default function Dashboard() {
 
                 {activeTab === "agent" && (
                   <div>
-                    <h3 className="text-lg font-medium mb-4">Agent Configuration</h3>
-                    <p className="text-sm text-[#6a6a6a] mb-6">
+                    <h3 className="text-xl font-semibold mb-2">Agent Configuration</h3>
+                    <p className="text-sm text-[#6a7a88] mb-6">
                       Configure autonomous borrowing for AI agents
                     </p>
                     <div className="space-y-3">
@@ -226,8 +229,8 @@ export default function Dashboard() {
             {/* Sidebar */}
             <div className="space-y-4">
               {/* Reputation */}
-              <div className="p-5 bg-[#111114] border border-[#1a1a1f] rounded-xl">
-                <h3 className="text-sm font-medium text-[#8a8a8a] mb-4">Reputation</h3>
+              <div className="p-5 bg-[#051525]/80 border border-[#0a2535] rounded-2xl backdrop-blur-sm card-hover">
+                <h3 className="text-sm font-medium text-[#8a9aa8] mb-4">Reputation Score</h3>
                 <div className="space-y-3">
                   <InfoRow label="Repayments" value={legasi.position?.reputation.successfulRepayments || 0} />
                   <InfoRow 
@@ -243,7 +246,7 @@ export default function Dashboard() {
                     label="Account Age" 
                     value={`${legasi.position?.reputation.accountAgeDays || 0}d`} 
                   />
-                  <div className="pt-3 border-t border-[#1a1a1f]">
+                  <div className="pt-3 border-t border-[#0a2535]">
                     <InfoRow 
                       label="LTV Bonus" 
                       value={`+${ltvBonus}%`}
@@ -254,19 +257,23 @@ export default function Dashboard() {
               </div>
 
               {/* Protection */}
-              <div className="p-5 bg-[#0d1f1a] border border-[#1a2f25] rounded-xl">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">🛡️</span>
-                  <h3 className="text-sm font-medium">GAD Protection</h3>
+              <div className="p-5 bg-gradient-to-br from-[#0a2535] to-[#051525] border border-[#FF4E00]/20 rounded-2xl card-hover">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#FF4E00]/10 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-[#FF4E00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-sm font-semibold">GAD Protection</h3>
                 </div>
-                <p className="text-xs text-[#6a6a6a] leading-relaxed">
-                  No sudden liquidations. Positions unwound gradually.
+                <p className="text-xs text-[#6a7a88] leading-relaxed">
+                  No sudden liquidations. Positions unwound gradually, protecting you from MEV.
                 </p>
               </div>
 
               {/* Links */}
-              <div className="p-5 bg-[#111114] border border-[#1a1a1f] rounded-xl">
-                <h3 className="text-sm font-medium text-[#8a8a8a] mb-3">Links</h3>
+              <div className="p-5 bg-[#051525]/80 border border-[#0a2535] rounded-2xl backdrop-blur-sm card-hover">
+                <h3 className="text-sm font-medium text-[#8a9aa8] mb-4">Resources</h3>
                 <div className="space-y-2">
                   <LinkRow href="https://github.com/legasicrypto/colosseum-agent-hackathon" label="Documentation" />
                   <LinkRow href="https://colosseum.com/agent-hackathon/projects/legasi-credit-protocol" label="Vote on Colosseum" />
@@ -283,13 +290,13 @@ export default function Dashboard() {
 
 function Nav() {
   return (
-    <nav className="sticky top-0 z-50 bg-[#0c0c0f]/90 backdrop-blur-md border-b border-[#1a1a1f]">
+    <nav className="sticky top-0 z-50 bg-[#001520]/80 backdrop-blur-xl border-b border-[#0a2535]">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <img src="/logo-white.png" alt="Legasi" className="w-8 h-8" />
+        <Link href="/" className="flex items-center gap-2 group">
+          <img src="/logo-white.png" alt="Legasi" className="w-8 h-8 group-hover:scale-110 transition-transform" />
           <span className="text-lg font-semibold tracking-tight">Legasi</span>
         </Link>
-        <WalletMultiButton className="!bg-[#1a1a1f] !border !border-[#2a2a2f] !rounded-lg !h-10 !text-sm" />
+        <WalletMultiButton className="!bg-[#0a2535] !border !border-[#1a3545] !rounded-xl !h-10 !text-sm !transition-all hover:!border-[#FF4E00]/50" />
       </div>
     </nav>
   );
@@ -307,10 +314,10 @@ function MetricCard({
   color?: string;
 }) {
   return (
-    <div className="p-4 bg-[#111114] border border-[#1a1a1f] rounded-xl">
-      <div className="text-xs text-[#6a6a6a] mb-1">{label}</div>
-      <div className="text-xl font-semibold" style={{ color: color || "white" }}>{value}</div>
-      {subtitle && <div className="text-xs text-[#00D395] mt-1">{subtitle}</div>}
+    <div className="p-5 bg-[#051525]/80 border border-[#0a2535] rounded-2xl backdrop-blur-sm card-hover group">
+      <div className="text-xs text-[#6a7a88] mb-2 uppercase tracking-wider">{label}</div>
+      <div className="text-2xl font-bold group-hover:scale-105 transition-transform origin-left" style={{ color: color || "white" }}>{value}</div>
+      {subtitle && <div className="text-xs text-[#FF4E00] mt-2 font-medium">{subtitle}</div>}
     </div>
   );
 }
@@ -332,14 +339,14 @@ function AgentButton({
     <button
       onClick={onClick}
       disabled={loading}
-      className={`w-full p-4 rounded-lg text-left transition ${
+      className={`w-full p-5 rounded-xl text-left transition-all hover:scale-[1.02] ${
         highlighted 
-          ? "bg-[#0d1f1a] border border-[#1a2f25] hover:border-[#00D395]"
-          : "bg-[#0c0c0f] border border-[#2a2a2f] hover:border-[#3a3a3f]"
-      } disabled:opacity-50`}
+          ? "bg-gradient-to-br from-[#FF4E00]/10 to-[#FF4E00]/5 border border-[#FF4E00]/30 hover:border-[#FF4E00]"
+          : "bg-[#001520] border border-[#0a2535] hover:border-[#1a3545]"
+      } disabled:opacity-50 disabled:hover:scale-100`}
     >
-      <div className="font-medium text-sm">{title}</div>
-      <div className="text-xs text-[#6a6a6a] mt-1">{description}</div>
+      <div className="font-semibold">{title}</div>
+      <div className="text-xs text-[#6a7a88] mt-1">{description}</div>
     </button>
   );
 }
@@ -357,11 +364,11 @@ function InfoRow({
 }) {
   return (
     <div className="flex justify-between items-center text-sm">
-      <span className="text-[#6a6a6a]">{label}</span>
+      <span className="text-[#6a7a88]">{label}</span>
       <span className={
-        highlight ? "text-[#00D395] font-medium" : 
+        highlight ? "text-[#FF4E00] font-semibold" : 
         negative && value !== 0 ? "text-red-400" : 
-        "text-white"
+        "text-white font-medium"
       }>
         {value}
       </span>
@@ -374,11 +381,11 @@ function LinkRow({ href, label }: { href: string; label: string }) {
     <a 
       href={href} 
       target="_blank" 
-      className="flex items-center justify-between text-sm text-[#6a6a6a] hover:text-white transition"
+      className="flex items-center justify-between text-sm text-[#6a7a88] hover:text-[#FF4E00] transition-colors py-1"
     >
       <span>{label}</span>
-      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
       </svg>
     </a>
   );
