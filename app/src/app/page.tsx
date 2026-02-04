@@ -96,7 +96,7 @@ export default function Home() {
       {/* Built On */}
       <section className="py-16 px-6">
         <div className="max-w-4xl mx-auto">
-          <p className="text-center text-xs text-[#5a5a5a] uppercase tracking-wider mb-8">Built on</p>
+          <p className="text-center text-xs text-[#5a5a5a] uppercase tracking-wider mb-8">Powered by</p>
           <div className="flex justify-center items-center gap-16">
             {/* Solana Logo */}
             <div className="flex items-center gap-3 text-[#5a5a5a] hover:text-[#8a8a8a] transition">
@@ -108,16 +108,16 @@ export default function Home() {
               <span className="text-sm font-medium">Solana</span>
             </div>
             
-            {/* Anchor Logo - Coral/Anchor GitHub */}
+            {/* Pyth Logo */}
             <div className="flex items-center gap-3 text-[#5a5a5a] hover:text-[#8a8a8a] transition">
-              <img src="https://avatars.githubusercontent.com/u/76976856?s=64" alt="Anchor" className="w-7 h-7 rounded" />
-              <span className="text-sm font-medium">Anchor</span>
+              <img src="/pyth-logo.svg" alt="Pyth" className="w-7 h-7" />
+              <span className="text-sm font-medium">Pyth</span>
             </div>
 
-            {/* Pyth Logo - Pyth Network */}
+            {/* Jupiter Logo */}
             <div className="flex items-center gap-3 text-[#5a5a5a] hover:text-[#8a8a8a] transition">
-              <img src="https://avatars.githubusercontent.com/u/90330562?s=64" alt="Pyth" className="w-7 h-7 rounded" />
-              <span className="text-sm font-medium">Pyth</span>
+              <img src="https://avatars.githubusercontent.com/u/90479116?s=64" alt="Jupiter" className="w-7 h-7 rounded" />
+              <span className="text-sm font-medium">Jupiter</span>
             </div>
           </div>
         </div>
