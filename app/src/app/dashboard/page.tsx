@@ -38,9 +38,7 @@ export default function Dashboard() {
       <div className="min-h-screen bg-[#0c0c0f] text-white flex flex-col">
         <Nav />
         <div className="flex-1 flex flex-col items-center justify-center px-6">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00D395] to-[#00A3FF] flex items-center justify-center text-3xl mb-6">
-            🤖
-          </div>
+          <img src="/logo-white.png" alt="Legasi" className="w-16 h-16 mb-6" />
           <h1 className="text-2xl font-semibold mb-3">Connect Wallet</h1>
           <p className="text-[#6a6a6a] mb-8 text-center max-w-sm">
             Connect your wallet to access the Legasi protocol
@@ -288,9 +286,7 @@ function Nav() {
     <nav className="sticky top-0 z-50 bg-[#0c0c0f]/90 backdrop-blur-md border-b border-[#1a1a1f]">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00D395] to-[#00A3FF] flex items-center justify-center font-bold text-sm text-black">
-            L
-          </div>
+          <img src="/logo-white.png" alt="Legasi" className="w-8 h-8" />
           <span className="text-lg font-semibold tracking-tight">Legasi</span>
         </Link>
         <WalletMultiButton className="!bg-[#1a1a1f] !border !border-[#2a2a2f] !rounded-lg !h-10 !text-sm" />

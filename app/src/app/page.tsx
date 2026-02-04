@@ -9,9 +9,7 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0c0c0f]/90 backdrop-blur-md border-b border-[#1a1a1f]">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00D395] to-[#00A3FF] flex items-center justify-center font-bold text-sm text-black">
-              L
-            </div>
+            <img src="/logo-white.png" alt="Legasi" className="w-8 h-8" />
             <span className="text-lg font-semibold tracking-tight">Legasi</span>
           </div>
           
@@ -229,9 +227,7 @@ export default function Home() {
       <footer className="py-8 px-6 border-t border-[#1a1a1f]">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2 text-[#5a5a5a]">
-            <div className="w-6 h-6 rounded bg-gradient-to-br from-[#00D395] to-[#00A3FF] flex items-center justify-center font-bold text-[10px] text-black">
-              L
-            </div>
+            <img src="/logo-white.png" alt="Legasi" className="w-6 h-6" />
             <span className="text-sm">Built by Bouliche 🎱</span>
           </div>
           <div className="flex gap-6 text-sm">
