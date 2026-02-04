@@ -12,17 +12,28 @@ pub mod legasi_lp {
     use super::*;
 
     /// Initialize an LP pool for a borrowable asset (e.g., USDC → bUSDC)
+    /// Step 1: Create the pool PDA
     pub fn initialize_pool(ctx: Context<InitializePool>) -> Result<()> {
         let pool = &mut ctx.accounts.lp_pool;
         pool.borrowable_mint = ctx.accounts.borrowable_mint.key();
-        pool.lp_token_mint = ctx.accounts.lp_token_mint.key();
+        pool.lp_token_mint = Pubkey::default(); // Set in step 2
         pool.total_deposits = 0;
         pool.total_shares = 0;
         pool.total_borrowed = 0;
         pool.interest_earned = 0;
         pool.bump = ctx.bumps.lp_pool;
 
-        msg!("LP pool initialized for {}", ctx.accounts.borrowable_mint.key());
+        msg!("LP pool created for {}", ctx.accounts.borrowable_mint.key());
+        Ok(())
+    }
+
+    /// Initialize LP pool accounts (mint + vault)
+    /// Step 2: Create the LP token mint and vault
+    pub fn initialize_pool_accounts(ctx: Context<InitializePoolAccounts>) -> Result<()> {
+        let pool = &mut ctx.accounts.lp_pool;
+        pool.lp_token_mint = ctx.accounts.lp_token_mint.key();
+
+        msg!("LP pool accounts initialized");
         Ok(())
     }
 
@@ -221,12 +232,25 @@ pub struct InitializePool<'info> {
     )]
     pub lp_pool: Account<'info, LpPool>,
     pub borrowable_mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub admin: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct InitializePoolAccounts<'info> {
+    #[account(
+        mut,
+        seeds = [b"lp_pool", lp_pool.borrowable_mint.as_ref()],
+        bump = lp_pool.bump
+    )]
+    pub lp_pool: Box<Account<'info, LpPool>>,
     #[account(
         init,
         payer = admin,
         mint::decimals = 6,
         mint::authority = lp_pool,
-        seeds = [b"lp_token", borrowable_mint.key().as_ref()],
+        seeds = [b"lp_token", lp_pool.borrowable_mint.as_ref()],
         bump
     )]
     pub lp_token_mint: Account<'info, Mint>,
@@ -235,10 +259,12 @@ pub struct InitializePool<'info> {
         payer = admin,
         token::mint = borrowable_mint,
         token::authority = lp_pool,
-        seeds = [b"lp_vault", borrowable_mint.key().as_ref()],
+        seeds = [b"lp_vault", lp_pool.borrowable_mint.as_ref()],
         bump
     )]
     pub vault: Account<'info, TokenAccount>,
+    /// The original borrowable mint (USDC, etc.)
+    pub borrowable_mint: Account<'info, Mint>,
     #[account(mut)]
     pub admin: Signer<'info>,
     pub token_program: Program<'info, Token>,
