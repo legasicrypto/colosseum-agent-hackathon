@@ -1,12 +1,18 @@
 [toolchain]
-anchor_version = "0.32.1"
+anchor_version = "0.30.1"
 
 [features]
 resolution = true
 skip-lint = false
 
 [programs.devnet]
-legasi_credit = "FH8VWbL8nbjU2wU7uauc883Z11wdxtjr8GKfvamPR5Lf"
+legasi_core = "MwmRkwGKwMPe9Z1hcPT3PEjGMyCpJW97BmgYJdKdNMj"
+legasi_lending = "3J91it4U5efZ65m2bfczZzkhFJzkzSPwMmZN9d6NiRWw"
+legasi_gad = "72p3DSpc1KBioqrx9F3Eu1RtGbzdgCFZZWjn6Bg67C96"
+legasi_lp = "HZm3U2tJTJpND94o1tNHV1mrG6wF17i4xYeCp6BNJz5z"
+legasi_flash = "GSwwfoVu45LQ8AFZCMyX7Yd1bppLDsXGnt9NKEUiPALW"
+legasi_leverage = "5hqw7X7Y7ofJrxn53U3YVN6WJ6xeYekfyXU6HumjiQPq"
+legasi_staking = "AkUt1LALuZsb6H9QUDrWkHJik2zAd91yh7vjnHWMfzod"
 
 [registry]
 url = "https://api.apr.dev"
