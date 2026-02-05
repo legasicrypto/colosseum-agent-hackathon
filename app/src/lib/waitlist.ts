@@ -9,6 +9,11 @@ export interface WaitlistEntry {
   referralCount: number;
   createdAt: string;
   walletAddress?: string;
+  // Agent-specific fields
+  isAgent?: boolean;
+  agentName?: string;
+  agentDescription?: string;
+  useCase?: string;
 }
 
 interface WaitlistData {
@@ -155,4 +160,104 @@ export async function getLeaderboard(
 function maskEmail(email: string): string {
   const [local, domain] = email.split('@');
   return `${local.slice(0, 2)}***@${domain}`;
+}
+
+// ============================================
+// AGENT-SPECIFIC FUNCTIONS
+// ============================================
+
+export interface AgentSignupParams {
+  walletAddress: string;
+  agentName: string;
+  agentDescription?: string;
+  useCase?: string;
+  referralCode?: string;
+}
+
+// Add an AI agent to the waitlist
+export async function addAgentToWaitlist(
+  params: AgentSignupParams
+): Promise<{ success: boolean; entry?: WaitlistEntry; error?: string }> {
+  const { walletAddress, agentName, agentDescription, useCase, referralCode } = params;
+
+  // Validate wallet address (basic Solana format check)
+  if (!walletAddress || walletAddress.length < 32 || walletAddress.length > 44) {
+    return { success: false, error: 'Invalid Solana wallet address' };
+  }
+
+  if (!agentName || agentName.trim().length < 2) {
+    return { success: false, error: 'Agent name is required (min 2 characters)' };
+  }
+
+  const waitlist = await readWaitlist();
+
+  // Check if wallet already exists
+  const existingEntry = waitlist.entries.find(
+    (e) => e.walletAddress?.toLowerCase() === walletAddress.toLowerCase()
+  );
+  if (existingEntry) {
+    return { success: false, error: 'Wallet already registered', entry: existingEntry };
+  }
+
+  // Validate referral code if provided
+  let referrer: WaitlistEntry | undefined;
+  if (referralCode) {
+    referrer = waitlist.entries.find(
+      (e) => e.code.toUpperCase() === referralCode.toUpperCase()
+    );
+    // Don't fail if referral code is invalid, just ignore it
+  }
+
+  // Create agent email placeholder (for internal tracking)
+  const agentEmail = `${agentName.toLowerCase().replace(/[^a-z0-9]/g, '')}_${walletAddress.slice(0, 8)}@agent.legasi.io`;
+
+  // Create new entry
+  const newEntry: WaitlistEntry = {
+    email: agentEmail,
+    code: generateInviteCode(),
+    referredBy: referrer?.code || null,
+    referralCount: 0,
+    createdAt: new Date().toISOString(),
+    walletAddress,
+    isAgent: true,
+    agentName: agentName.trim(),
+    agentDescription: agentDescription?.trim(),
+    useCase: useCase?.trim(),
+  };
+
+  // Update referrer's count
+  if (referrer) {
+    referrer.referralCount += 1;
+  }
+
+  waitlist.entries.push(newEntry);
+  await writeWaitlist(waitlist);
+
+  return { success: true, entry: newEntry };
+}
+
+// Get all registered agents
+export async function getRegisteredAgents(): Promise<WaitlistEntry[]> {
+  const waitlist = await readWaitlist();
+  return waitlist.entries.filter((e) => e.isAgent === true);
+}
+
+// Get agent stats
+export async function getAgentStats(): Promise<{
+  totalAgents: number;
+  totalHumans: number;
+  recentAgents: { name: string; useCase?: string }[];
+}> {
+  const waitlist = await readWaitlist();
+  const agents = waitlist.entries.filter((e) => e.isAgent);
+  const humans = waitlist.entries.filter((e) => !e.isAgent);
+  
+  return {
+    totalAgents: agents.length,
+    totalHumans: humans.length,
+    recentAgents: agents
+      .slice(-5)
+      .reverse()
+      .map((a) => ({ name: a.agentName || 'Unknown', useCase: a.useCase })),
+  };
 }
