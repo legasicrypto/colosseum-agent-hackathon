@@ -523,7 +523,22 @@ function Dashboard() {
                     )}
 
                     {/* WITHDRAW */}
-                    {actionTab === "withdraw" && (
+                    {actionTab === "withdraw" && (() => {
+                      // Get user's collateral for selected asset
+                      const assetCollateral = legasi.position?.collaterals.find(c => 
+                        c.assetType === (withdrawAsset === "SOL" ? ASSET_TYPES.SOL : ASSET_TYPES.cbBTC)
+                      );
+                      const decimals = withdrawAsset === "SOL" ? 1e9 : 1e8;
+                      const userBalanceInAsset = assetCollateral ? assetCollateral.amount.toNumber() / decimals : 0;
+                      const userBalanceValue = userBalanceInAsset * PRICES[withdrawAsset];
+                      
+                      // Max withdrawable: min of (user balance, LTV-constrained max)
+                      const maxWithdrawInAsset = Math.min(userBalanceInAsset, maxWithdrawValue / PRICES[withdrawAsset]);
+                      const withdrawAmountNum = parseFloat(withdrawAmount) || 0;
+                      const exceedsBalance = withdrawAmountNum > userBalanceInAsset;
+                      const exceedsLTV = withdrawAmountNum * PRICES[withdrawAsset] > maxWithdrawValue && borrowedValue > 0;
+                      
+                      return (
                       <div>
                         <h3 className="text-xl font-semibold mb-2">Withdraw Collateral</h3>
                         <p className="text-sm text-[#6a7a88] mb-6">
@@ -533,7 +548,7 @@ function Dashboard() {
                           }
                         </p>
                         
-                        {/* Warning if has debt */}
+                        {/* Warning if has debt and can't withdraw */}
                         {borrowedValue > 0 && maxWithdrawValue === 0 && (
                           <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
                             You must repay your debt before withdrawing collateral. Current LTV: {currentLTV.toFixed(1)}%
@@ -564,17 +579,20 @@ function Dashboard() {
                               placeholder="0.00"
                               value={withdrawAmount}
                               onChange={(e) => setWithdrawAmount(e.target.value)}
-                              className="w-full h-14 bg-[#001520] border border-[#0a2535] rounded-xl px-4 pr-20 text-white placeholder-[#3a4a58] focus:outline-none focus:border-[#FF4E00] transition-all"
+                              className={`w-full h-14 bg-[#001520] border rounded-xl px-4 pr-20 text-white placeholder-[#3a4a58] focus:outline-none transition-all ${
+                                exceedsBalance || exceedsLTV 
+                                  ? "border-red-500/50 focus:border-red-500" 
+                                  : "border-[#0a2535] focus:border-[#FF4E00]"
+                              }`}
                             />
                             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6a7a88] text-sm font-medium">
                               {withdrawAsset}
                             </span>
                           </div>
-                          {maxWithdrawValue > 0 && (
+                          {maxWithdrawInAsset > 0 && (
                             <button
                               onClick={() => {
-                                const maxInAsset = maxWithdrawValue / PRICES[withdrawAsset];
-                                setWithdrawAmount(maxInAsset.toFixed(4));
+                                setWithdrawAmount(maxWithdrawInAsset.toFixed(4));
                               }}
                               className="h-14 px-4 bg-[#0a2535] hover:bg-[#1a3545] text-[#FF4E00] font-medium rounded-xl transition-all"
                             >
@@ -584,25 +602,48 @@ function Dashboard() {
                           <button
                             onClick={async () => {
                               if (isDemoMode) {
-                                await demoLegasi.withdraw(parseFloat(withdrawAmount), withdrawAsset);
+                                const actualAmount = Math.min(withdrawAmountNum, maxWithdrawInAsset);
+                                await demoLegasi.withdraw(actualAmount, withdrawAsset);
                               }
                               setWithdrawAmount("");
                             }}
-                            disabled={legasi.loading || !withdrawAmount || collateralValue === 0 || maxWithdrawValue === 0}
+                            disabled={legasi.loading || !withdrawAmount || userBalanceInAsset === 0 || (borrowedValue > 0 && maxWithdrawValue === 0)}
                             className="h-14 px-8 bg-[#FF4E00] hover:bg-[#E64500] text-white font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100"
                           >
                             Withdraw
                           </button>
                         </div>
                         
-                        <div className="p-4 bg-[#001520]/50 rounded-xl">
+                        {/* Validation messages */}
+                        {exceedsBalance && (
+                          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                            Insufficient balance. You only have {userBalanceInAsset.toFixed(4)} {withdrawAsset}
+                          </div>
+                        )}
+                        {!exceedsBalance && exceedsLTV && (
+                          <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-400 text-sm">
+                            Amount exceeds LTV limit. Max withdrawable: {maxWithdrawInAsset.toFixed(4)} {withdrawAsset}
+                          </div>
+                        )}
+                        
+                        <div className="p-4 bg-[#001520]/50 rounded-xl space-y-2">
                           <div className="flex justify-between text-sm">
-                            <span className="text-[#6a7a88]">Total supplied</span>
+                            <span className="text-[#6a7a88]">Your {withdrawAsset} balance</span>
+                            <span className="text-white font-semibold">{userBalanceInAsset.toFixed(4)} {withdrawAsset}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-[#6a7a88]">Total collateral value</span>
                             <span className="text-white font-semibold">${collateralValue.toFixed(2)}</span>
                           </div>
+                          {borrowedValue > 0 && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-[#6a7a88]">Max withdrawable</span>
+                              <span className="text-[#FF4E00] font-semibold">{maxWithdrawInAsset.toFixed(4)} {withdrawAsset}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
+                    );})()}
                   </div>
 
                   {/* Agent Configuration */}
