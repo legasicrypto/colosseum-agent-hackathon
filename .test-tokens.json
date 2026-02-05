@@ -1,0 +1,12 @@
+{
+  "network": "devnet",
+  "timestamp": "2026-02-05T18:52:29.112Z",
+  "usdc": {
+    "mint": "3J2i1X4VGSxkEiHdnq4zead7hiSYbQHs9ZZaS36yAfX8",
+    "ata": "4cnmXXzTJstaW12LtBiaoCtBqAvbzQn5zjrK7s1pqccT"
+  },
+  "eurc": {
+    "mint": "6KeaPv9QA3VYaf62dfDzC785U8Cfa5VbsgtBH5ZWWf7v",
+    "ata": "Gao9tiZLzS34XspNPnuNZ8Kw58ixJpWPQtqiGmtsWuCv"
+  }
+}

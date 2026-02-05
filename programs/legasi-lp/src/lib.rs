@@ -1,9 +1,23 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Burn, Mint, MintTo, Token, TokenAccount, Transfer};
 
-use legasi_core::{constants::*, errors::LegasiError, events::*, state::*};
+use legasi_core::{constants::*, errors::LegasiError, events::*, state::Protocol};
+// Note: LpPool defined locally to avoid cross-program ownership issues
 
 declare_id!("CTwY4VSeueesSBc95G38X3WJYPriJEzyxjcCaZAc5LbY");
+
+/// LP Pool state - defined locally for proper program ownership
+#[account]
+#[derive(InitSpace)]
+pub struct LpPool {
+    pub borrowable_mint: Pubkey,
+    pub lp_token_mint: Pubkey,
+    pub total_deposits: u64,
+    pub total_shares: u64,
+    pub total_borrowed: u64,
+    pub interest_earned: u64,
+    pub bump: u8,
+}
 
 #[program]
 pub mod legasi_lp {

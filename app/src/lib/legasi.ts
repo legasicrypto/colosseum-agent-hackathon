@@ -15,11 +15,11 @@ export const LEGASI_GAD_PROGRAM_ID = new PublicKey("89E84ALdDdGGNuJAxho2H45aC25k
 export const LEGASI_FLASH_PROGRAM_ID = new PublicKey("Fj8CJNK1gBAuNR7dFbKLDckSstKmZn8ihTGwFXxfY93m");
 export const LEGASI_LEVERAGE_PROGRAM_ID = new PublicKey("AVATHjGrdQ1KqtjHQ4gwRcuAYjwwScwgPsujLDpiA2g3");
 
-// Token Mints
+// Token Mints (Devnet test tokens)
 export const SOL_MINT = new PublicKey("So11111111111111111111111111111111111111112");
-export const USDC_MINT = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"); // Mainnet USDC
-export const EURC_MINT = new PublicKey("HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr"); // EURC
-export const CBBTC_MINT = new PublicKey("cbBTCn3RP3rP8Gx4hWS9oYmmFPSgZxPF8Zr1nK2GEok"); // cbBTC (placeholder)
+export const USDC_MINT = new PublicKey("3J2i1X4VGSxkEiHdnq4zead7hiSYbQHs9ZZaS36yAfX8"); // Test USDC
+export const EURC_MINT = new PublicKey("6KeaPv9QA3VYaf62dfDzC785U8Cfa5VbsgtBH5ZWWf7v"); // Test EURC
+export const CBBTC_MINT = new PublicKey("3J2i1X4VGSxkEiHdnq4zead7hiSYbQHs9ZZaS36yAfX8"); // Placeholder (using USDC)
 
 // Helper to get PDAs
 export function getProtocolPDA(): [PublicKey, number] {

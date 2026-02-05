@@ -566,7 +566,7 @@
     {
       "name": "LpPool",
       "docs": [
-        "LP pool for a borrowable asset"
+        "LP Pool state - defined locally for proper program ownership"
       ],
       "type": {
         "kind": "struct",

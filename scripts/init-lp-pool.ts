@@ -14,8 +14,9 @@ const PROGRAM_IDS = {
   legasi_lp: new PublicKey('CTwY4VSeueesSBc95G38X3WJYPriJEzyxjcCaZAc5LbY'),
 };
 
-// Test USDC from init-devnet.ts
-const TEST_USDC_MINT = new PublicKey('4KHBEi7yWvgskkAy21ALQg9uDoLaqWy8CkwFikiw7YNk');
+// Fresh test tokens (created 2026-02-05)
+const TEST_USDC_MINT = new PublicKey('3J2i1X4VGSxkEiHdnq4zead7hiSYbQHs9ZZaS36yAfX8');
+const TEST_EURC_MINT = new PublicKey('6KeaPv9QA3VYaf62dfDzC785U8Cfa5VbsgtBH5ZWWf7v');
 
 async function main() {
   console.log('🏊 Initializing LP Pool on Devnet\n');

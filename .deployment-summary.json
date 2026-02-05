@@ -1,0 +1,33 @@
+{
+  "network": "devnet",
+  "timestamp": "2026-02-05T18:55:00Z",
+  "programs": {
+    "legasi_core": "4FW9iFaerNuX1GstRKSsWo9UfnTbjtqch3fEHkWMF1Uy",
+    "legasi_lending": "9356RoSbLTzWE55ab6GktcTocaNhPuBEDZvsmqjkCZYw",
+    "legasi_lp": "CTwY4VSeueesSBc95G38X3WJYPriJEzyxjcCaZAc5LbY",
+    "legasi_gad": "89E84ALdDdGGNuJAxho2H45aC25kqNdGg7QtwTJ3pngK",
+    "legasi_flash": "Fj8CJNK1gBAuNR7dFbKLDckSstKmZn8ihTGwFXxfY93m",
+    "legasi_leverage": "AVATHjGrdQ1KqtjHQ4gwRcuAYjwwScwgPsujLDpiA2g3"
+  },
+  "protocol": {
+    "pda": "5vLQ9HfAkbLzVGA3RrBQNpjighdvXzMTVMA1fBfqUjuJ"
+  },
+  "tokens": {
+    "usdc": {
+      "mint": "3J2i1X4VGSxkEiHdnq4zead7hiSYbQHs9ZZaS36yAfX8",
+      "lpPool": "46Kx2RTRM6abTnQhLCKdYwVYRmyfBNaepZ8yRfn3PTWG",
+      "lpToken": "3FV8JEBUh1V89QRTJFmn6iQeupwpus5MeiZmRfEkuN4u",
+      "vault": "89rbVxBFC5VCvjB5HXHfmCXBvHmjgF3TTt4sovXLdiiu"
+    },
+    "eurc": {
+      "mint": "6KeaPv9QA3VYaf62dfDzC785U8Cfa5VbsgtBH5ZWWf7v",
+      "lpPool": "34Gt8hwnMBqSrGLPgzD5tZ6PNCmaPv45KYBfuowve2q4",
+      "lpToken": "EUaRiDhzes9erwRgYDhd3qbzE9jqbHV9XpZzW6UqV4bv",
+      "vault": "E9Af3gXXH4tzvL9NpReMsKcDj3NrW6E1bSvsoDA4DMZc"
+    }
+  },
+  "priceFeeds": {
+    "sol": "CK3x1MgYJaSDCzFykdQLKb6LrhYKZLnvZ7RDuTNappmv",
+    "cbbtc": "ALiRFDn6BnZHb6MKWnFxWLe6oSLrdjTw6XWZWtgUtsya"
+  }
+}
