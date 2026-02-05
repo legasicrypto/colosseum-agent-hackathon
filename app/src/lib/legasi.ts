@@ -164,9 +164,10 @@ export class LegasiClient {
     const [protocolPDA] = getProtocolPDA();
     const [priceFeedPDA] = getPriceFeedPDA(SOL_MINT);
     
-    const borrowVaultPDA = PublicKey.findProgramAddressSync(
-      [Buffer.from("lp_vault"), USDC_MINT.toBuffer()],
-      LEGASI_LP_PROGRAM_ID
+    // Use lending_vault (owned by lending program)
+    const lendingVaultPDA = PublicKey.findProgramAddressSync(
+      [Buffer.from("lending_vault"), USDC_MINT.toBuffer()],
+      LEGASI_LENDING_PROGRAM_ID
     )[0];
     
     // Get user's USDC ATA
@@ -183,7 +184,7 @@ export class LegasiClient {
           [Buffer.from("borrowable"), USDC_MINT.toBuffer()],
           LEGASI_CORE_PROGRAM_ID
         )[0],
-        borrowVault: borrowVaultPDA,
+        borrowVault: lendingVaultPDA,
         userTokenAccount: userUsdcAta,
         solPriceFeed: priceFeedPDA,
         solMint: SOL_MINT,
@@ -225,13 +226,13 @@ export class LegasiClient {
   // Repay borrowed amount
   async repay(amount: number, assetType: number): Promise<string> {
     const [positionPDA] = getPositionPDA(this.provider.wallet.publicKey);
-    const [protocolPDA] = getProtocolPDA();
     
     const mint = assetType === 2 ? USDC_MINT : EURC_MINT;
     
-    const borrowVaultPDA = PublicKey.findProgramAddressSync(
-      [Buffer.from("lp_vault"), mint.toBuffer()],
-      LEGASI_LP_PROGRAM_ID
+    // Use lending_vault (owned by lending program)
+    const lendingVaultPDA = PublicKey.findProgramAddressSync(
+      [Buffer.from("lending_vault"), mint.toBuffer()],
+      LEGASI_LENDING_PROGRAM_ID
     )[0];
     
     const userTokenAta = await this.findAta(this.provider.wallet.publicKey, mint);
@@ -242,12 +243,11 @@ export class LegasiClient {
       .repay(repayAmount)
       .accounts({
         position: positionPDA,
-        protocol: protocolPDA,
         borrowableConfig: PublicKey.findProgramAddressSync(
           [Buffer.from("borrowable"), mint.toBuffer()],
           LEGASI_CORE_PROGRAM_ID
         )[0],
-        borrowVault: borrowVaultPDA,
+        repayVault: lendingVaultPDA,
         userTokenAccount: userTokenAta,
         owner: this.provider.wallet.publicKey,
         tokenProgram: TOKEN_PROGRAM_ID,
