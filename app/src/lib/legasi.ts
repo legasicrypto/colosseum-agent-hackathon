@@ -7,11 +7,13 @@ import LegasiCoreIDL from "@/idl/legasi_core.json";
 import LegasiLendingIDL from "@/idl/legasi_lending.json";
 import LegasiLpIDL from "@/idl/legasi_lp.json";
 
-// Program IDs
-export const LEGASI_CORE_PROGRAM_ID = new PublicKey("5Mru5amfomEPqNiEULRuHpgAZyyENqyCeNnkSoh7QjLy");
-export const LEGASI_LENDING_PROGRAM_ID = new PublicKey("DGRYqD9Hg9v27Fa9kLUUf3KY9hoprjBQp7y88qG9q88u");
-export const LEGASI_LP_PROGRAM_ID = new PublicKey("4g7FgDLuxXJ7fRa57m8SV3gjznMZ9KUjcdJfg1b6BfPF");
-export const LEGASI_GAD_PROGRAM_ID = new PublicKey("Ed7pfvjR1mRWmzHP3r1NvukESGr38xZKwpoQ5jGSAVad");
+// Program IDs (Devnet - deployed 2026-02-05)
+export const LEGASI_CORE_PROGRAM_ID = new PublicKey("4FW9iFaerNuX1GstRKSsWo9UfnTbjtqch3fEHkWMF1Uy");
+export const LEGASI_LENDING_PROGRAM_ID = new PublicKey("9356RoSbLTzWE55ab6GktcTocaNhPuBEDZvsmqjkCZYw");
+export const LEGASI_LP_PROGRAM_ID = new PublicKey("CTwY4VSeueesSBc95G38X3WJYPriJEzyxjcCaZAc5LbY");
+export const LEGASI_GAD_PROGRAM_ID = new PublicKey("89E84ALdDdGGNuJAxho2H45aC25kqNdGg7QtwTJ3pngK");
+export const LEGASI_FLASH_PROGRAM_ID = new PublicKey("Fj8CJNK1gBAuNR7dFbKLDckSstKmZn8ihTGwFXxfY93m");
+export const LEGASI_LEVERAGE_PROGRAM_ID = new PublicKey("AVATHjGrdQ1KqtjHQ4gwRcuAYjwwScwgPsujLDpiA2g3");
 
 // Token Mints
 export const SOL_MINT = new PublicKey("So11111111111111111111111111111111111111112");
