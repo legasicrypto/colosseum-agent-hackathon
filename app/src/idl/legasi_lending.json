@@ -1087,6 +1087,102 @@
       ]
     },
     {
+      "name": "update_agent_config",
+      "docs": [
+        "Update existing agent configuration"
+      ],
+      "discriminator": [
+        232,
+        239,
+        83,
+        133,
+        24,
+        49,
+        84,
+        76
+      ],
+      "accounts": [
+        {
+          "name": "position",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "position"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "daily_borrow_limit",
+          "type": "u64"
+        },
+        {
+          "name": "auto_repay_enabled",
+          "type": "bool"
+        },
+        {
+          "name": "x402_enabled",
+          "type": "bool"
+        },
+        {
+          "name": "alert_threshold_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
       "name": "withdraw_sol",
       "docs": [
         "Withdraw SOL collateral"

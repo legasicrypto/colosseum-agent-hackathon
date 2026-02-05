@@ -651,6 +651,24 @@ pub mod legasi_lending {
         Ok(())
     }
 
+    /// Update existing agent configuration
+    pub fn update_agent_config(
+        ctx: Context<UpdateAgentConfig>,
+        daily_borrow_limit: u64,
+        auto_repay_enabled: bool,
+        x402_enabled: bool,
+        alert_threshold_bps: u16,
+    ) -> Result<()> {
+        let agent_config = &mut ctx.accounts.agent_config;
+        agent_config.daily_borrow_limit = daily_borrow_limit;
+        agent_config.auto_repay_enabled = auto_repay_enabled;
+        agent_config.x402_enabled = x402_enabled;
+        agent_config.alert_threshold_bps = alert_threshold_bps;
+
+        msg!("Agent config updated: {} daily limit", daily_borrow_limit);
+        Ok(())
+    }
+
     /// Agent borrow - respects daily limits
     /// Can be called by the agent (position owner) autonomously
     pub fn agent_borrow(ctx: Context<AgentBorrow>, amount: u64) -> Result<()> {
@@ -1186,6 +1204,23 @@ pub struct ConfigureAgent<'info> {
     #[account(mut)]
     pub owner: Signer<'info>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct UpdateAgentConfig<'info> {
+    #[account(
+        seeds = [b"position", owner.key().as_ref()],
+        bump = position.bump,
+        has_one = owner
+    )]
+    pub position: Account<'info, Position>,
+    #[account(
+        mut,
+        seeds = [b"agent_config", position.key().as_ref()],
+        bump = agent_config.bump
+    )]
+    pub agent_config: Account<'info, AgentConfig>,
+    pub owner: Signer<'info>,
 }
 
 #[derive(Accounts)]

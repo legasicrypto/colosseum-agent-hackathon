@@ -196,7 +196,7 @@ export class LegasiClient {
     return tx;
   }
 
-  // Configure Agent
+  // Configure Agent (creates or updates)
   async configureAgent(
     dailyLimit: number,
     autoRepay: boolean,
@@ -205,22 +205,43 @@ export class LegasiClient {
     const [positionPDA] = getPositionPDA(this.provider.wallet.publicKey);
     const [agentConfigPDA] = getAgentConfigPDA(positionPDA);
     
-    const tx = await this.lendingProgram.methods
-      .configureAgent(
-        new BN(dailyLimit * 1_000_000), // USDC decimals
-        autoRepay,
-        x402Enabled,
-        7500 // Alert at 75% LTV
-      )
-      .accounts({
-        position: positionPDA,
-        agentConfig: agentConfigPDA,
-        owner: this.provider.wallet.publicKey,
-        systemProgram: SystemProgram.programId,
-      })
-      .rpc();
+    // Check if agent config already exists
+    const existingConfig = await this.provider.connection.getAccountInfo(agentConfigPDA);
     
-    return tx;
+    if (existingConfig) {
+      // Update existing config
+      const tx = await this.lendingProgram.methods
+        .updateAgentConfig(
+          new BN(dailyLimit * 1_000_000),
+          autoRepay,
+          x402Enabled,
+          7500
+        )
+        .accounts({
+          position: positionPDA,
+          agentConfig: agentConfigPDA,
+          owner: this.provider.wallet.publicKey,
+        })
+        .rpc();
+      return tx;
+    } else {
+      // Create new config
+      const tx = await this.lendingProgram.methods
+        .configureAgent(
+          new BN(dailyLimit * 1_000_000),
+          autoRepay,
+          x402Enabled,
+          7500
+        )
+        .accounts({
+          position: positionPDA,
+          agentConfig: agentConfigPDA,
+          owner: this.provider.wallet.publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .rpc();
+      return tx;
+    }
   }
 
   // Repay borrowed amount

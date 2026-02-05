@@ -25,7 +25,15 @@ function DashboardLoading() {
   );
 }
 
-// Asset types (matching on-chain enum)
+// Asset type helper (Anchor enums are objects like { sol: {} })
+function isAssetType(assetType: unknown, name: string): boolean {
+  if (typeof assetType === 'object' && assetType !== null) {
+    return name.toLowerCase() in assetType || name in assetType;
+  }
+  return false;
+}
+
+// For numeric comparison (demo mode)
 const ASSET_TYPES = {
   SOL: 0,
   cbBTC: 1,
@@ -94,14 +102,19 @@ function Dashboard() {
 
   // Calculate values
   const collateralValue = legasi.position?.collaterals.reduce((sum, c) => {
-    const isSol = c.assetType === ASSET_TYPES.SOL;
+    // Handle both numeric (demo) and object (real) asset types
+    const isSol = typeof c.assetType === 'number' 
+      ? c.assetType === ASSET_TYPES.SOL 
+      : isAssetType(c.assetType, 'sol');
     const price = isSol ? PRICES.SOL : PRICES.cbBTC;
     const decimals = isSol ? 1e9 : 1e8;
     return sum + (c.amount.toNumber() / decimals * price);
   }, 0) || 0;
   
   const borrowedValue = legasi.position?.borrows.reduce((sum, b) => {
-    const isUSDC = b.assetType === ASSET_TYPES.USDC;
+    const isUSDC = typeof b.assetType === 'number'
+      ? b.assetType === ASSET_TYPES.USDC
+      : isAssetType(b.assetType, 'usdc');
     const price = isUSDC ? PRICES.USDC : PRICES.EURC;
     return sum + ((b.amount.toNumber() + b.accruedInterest.toNumber()) / 1e6 * price);
   }, 0) || 0;
@@ -400,12 +413,18 @@ function Dashboard() {
                           </button>
                           <button
                             onClick={async () => {
-                              if (isDemoMode) {
-                                await demoLegasi.borrowAsset(parseFloat(borrowAmount), borrowAsset);
-                              } else {
-                                await legasi.borrow(parseFloat(borrowAmount));
+                              try {
+                                if (isDemoMode) {
+                                  await demoLegasi.borrowAsset(parseFloat(borrowAmount), borrowAsset);
+                                } else {
+                                  console.log("Borrowing", parseFloat(borrowAmount), "USDC");
+                                  await legasi.borrow(parseFloat(borrowAmount));
+                                }
+                                setBorrowAmount("");
+                              } catch (err) {
+                                console.error("Borrow error:", err);
+                                alert(`Borrow failed: ${err instanceof Error ? err.message : String(err)}`);
                               }
-                              setBorrowAmount("");
                             }}
                             disabled={legasi.loading || !borrowAmount}
                             className="h-14 px-8 bg-[#FF4E00] hover:bg-[#E64500] text-white font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100"
@@ -479,8 +498,11 @@ function Dashboard() {
                               <button
                                 onClick={() => {
                                   // Get the borrowed amount for the selected asset
+                                  const targetAsset = repayAsset.toLowerCase();
                                   const assetBorrow = legasi.position?.borrows.find(b => 
-                                    b.assetType === (repayAsset === "USDC" ? ASSET_TYPES.USDC : ASSET_TYPES.EURC)
+                                    typeof b.assetType === 'number'
+                                      ? b.assetType === (repayAsset === "USDC" ? ASSET_TYPES.USDC : ASSET_TYPES.EURC)
+                                      : isAssetType(b.assetType, targetAsset)
                                   );
                                   if (assetBorrow) {
                                     const total = (assetBorrow.amount.toNumber() + assetBorrow.accruedInterest.toNumber()) / 1e6;
@@ -525,8 +547,11 @@ function Dashboard() {
                     {/* WITHDRAW */}
                     {actionTab === "withdraw" && (() => {
                       // Get user's collateral for selected asset
+                      const targetAsset = withdrawAsset.toLowerCase();
                       const assetCollateral = legasi.position?.collaterals.find(c => 
-                        c.assetType === (withdrawAsset === "SOL" ? ASSET_TYPES.SOL : ASSET_TYPES.cbBTC)
+                        typeof c.assetType === 'number'
+                          ? c.assetType === (withdrawAsset === "SOL" ? ASSET_TYPES.SOL : ASSET_TYPES.cbBTC)
+                          : isAssetType(c.assetType, targetAsset)
                       );
                       const decimals = withdrawAsset === "SOL" ? 1e9 : 1e8;
                       const userBalanceInAsset = assetCollateral ? assetCollateral.amount.toNumber() / decimals : 0;
@@ -722,7 +747,9 @@ function Dashboard() {
                     <div className="mb-4">
                       <div className="text-xs text-[#6a7a88] mb-2">Collateral</div>
                       {legasi.position?.collaterals.map((c, i) => {
-                        const isSol = c.assetType === ASSET_TYPES.SOL;
+                        const isSol = typeof c.assetType === 'number'
+                          ? c.assetType === ASSET_TYPES.SOL
+                          : isAssetType(c.assetType, 'sol');
                         const asset = isSol ? "SOL" : "cbBTC";
                         const decimals = isSol ? 1e9 : 1e8;
                         const amount = c.amount.toNumber() / decimals;
@@ -742,7 +769,9 @@ function Dashboard() {
                     <div>
                       <div className="text-xs text-[#6a7a88] mb-2">Borrowed</div>
                       {legasi.position?.borrows.map((b, i) => {
-                        const isUSDC = b.assetType === ASSET_TYPES.USDC;
+                        const isUSDC = typeof b.assetType === 'number'
+                          ? b.assetType === ASSET_TYPES.USDC
+                          : isAssetType(b.assetType, 'usdc');
                         const asset = isUSDC ? "USDC" : "EURC";
                         const amount = b.amount.toNumber() / 1e6;
                         const interest = b.accruedInterest.toNumber() / 1e6;
