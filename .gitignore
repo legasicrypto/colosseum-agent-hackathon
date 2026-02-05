@@ -13,3 +13,4 @@ sdk/dist
 sdk/node_modules
 target/
 test-ledger/
+.moltbook
