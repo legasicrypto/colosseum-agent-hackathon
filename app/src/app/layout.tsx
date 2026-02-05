@@ -57,7 +57,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/legasi-logo.svg" />
+        <link rel="icon" type="image/png" href="/legasi-logo.png" />
+        <link rel="apple-touch-icon" href="/legasi-logo.png" />
         <link rel="canonical" href="https://agentic.legasi.io" />
         <script
           type="application/ld+json"
