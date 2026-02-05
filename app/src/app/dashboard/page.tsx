@@ -292,9 +292,8 @@ function Nav() {
   return (
     <nav className="sticky top-0 z-50 bg-[#001520]/80 backdrop-blur-xl border-b border-[#0a2535]">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center group">
           <img src="/legasi-logo.svg" alt="Legasi" className="h-8 w-auto group-hover:scale-110 transition-transform" />
-          <span className="text-lg font-semibold tracking-tight">Legasi</span>
         </Link>
         <WalletMultiButton className="!bg-[#0a2535] !border !border-[#1a3545] !rounded-xl !h-10 !text-sm !transition-all hover:!border-[#FF4E00]/50" />
       </div>

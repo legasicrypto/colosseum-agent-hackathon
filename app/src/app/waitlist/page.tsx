@@ -98,9 +98,8 @@ export default function WaitlistPage() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-[#001520]/80 backdrop-blur-xl border-b border-[#0a2535]">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center">
             <img src="/legasi-logo.svg" alt="Legasi" className="h-8 w-auto" />
-            <span className="text-lg font-semibold tracking-tight">Legasi</span>
           </Link>
           <div className="flex items-center gap-6">
             <Link href="/" className="text-[#8a9aa8] hover:text-white transition text-sm">
@@ -310,9 +309,8 @@ export default function WaitlistPage() {
       {/* Footer */}
       <footer className="py-10 px-6 border-t border-[#0a2535]">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-3 text-[#5a6a78]">
+          <div className="flex items-center text-[#5a6a78]">
             <img src="/legasi-logo.svg" alt="Legasi" className="h-6 w-auto" />
-            <span className="text-sm">Legasi Protocol</span>
           </div>
           <div className="flex gap-8 text-sm">
             <a href="https://x.com/legasi_xyz" target="_blank" className="text-[#5a6a78] hover:text-[#FF4E00] transition-colors">

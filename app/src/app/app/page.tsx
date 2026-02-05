@@ -49,9 +49,8 @@ export default function AppPage() {
       <nav className="sticky top-0 z-50 bg-[#001520]/80 backdrop-blur-xl border-b border-[#0a2535]">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center">
               <img src="/legasi-logo.svg" alt="Legasi" className="h-8 w-auto" />
-              <span className="text-lg font-semibold tracking-tight">Legasi</span>
             </Link>
             <div className="flex gap-1 p-1 bg-[#051525] border border-[#0a2535] rounded-xl">
               {(['deposit', 'borrow', 'leverage'] as const).map((tab) => (
