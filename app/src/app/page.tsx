@@ -8,9 +8,8 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-[#001520]/80 backdrop-blur-xl border-b border-[#0a2535]">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src="/logo-white.png" alt="Legasi" className="w-8 h-8" />
-            <span className="text-lg font-semibold tracking-tight">Legasi</span>
+          <div className="flex items-center">
+            <img src="/legasi-logo.svg" alt="Legasi" className="h-8 w-auto" />
           </div>
           
           <div className="hidden md:flex items-center gap-8">
