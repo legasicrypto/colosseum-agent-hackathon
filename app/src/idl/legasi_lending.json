@@ -389,65 +389,34 @@
         },
         {
           "name": "protocol",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  112,
-                  114,
-                  111,
-                  116,
-                  111,
-                  99,
-                  111,
-                  108
-                ]
-              }
-            ]
-          }
+          "docs": [
+            "Protocol state (owned by core program - no seeds validation)"
+          ]
         },
         {
           "name": "borrowable_config",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  111,
-                  114,
-                  114,
-                  111,
-                  119,
-                  97,
-                  98,
-                  108,
-                  101
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "borrowable_config.mint",
-                "account": "Borrowable"
-              }
-            ]
-          }
+          "docs": [
+            "Borrowable config (owned by core program - no seeds validation)"
+          ]
         },
         {
           "name": "borrow_vault",
+          "docs": [
+            "Lending vault (owned by this program)"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  98,
-                  111,
-                  114,
-                  114,
-                  111,
-                  119,
+                  108,
+                  101,
+                  110,
+                  100,
+                  105,
+                  110,
+                  103,
                   95,
                   118,
                   97,
@@ -470,24 +439,9 @@
         },
         {
           "name": "sol_price_feed",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  112,
-                  114,
-                  105,
-                  99,
-                  101
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "sol_mint"
-              }
-            ]
-          }
+          "docs": [
+            "Price feed (owned by core program - no seeds validation)"
+          ]
         },
         {
           "name": "sol_mint"
@@ -823,6 +777,71 @@
       ]
     },
     {
+      "name": "initialize_lending_vault",
+      "docs": [
+        "Initialize the lending vault for a borrowable asset"
+      ],
+      "discriminator": [
+        195,
+        57,
+        41,
+        208,
+        76,
+        233,
+        80,
+        217
+      ],
+      "accounts": [
+        {
+          "name": "lending_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  110,
+                  100,
+                  105,
+                  110,
+                  103,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "initialize_position",
       "docs": [
         "Initialize a user position"
@@ -1032,60 +1051,16 @@
         },
         {
           "name": "borrowable_config",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  111,
-                  114,
-                  114,
-                  111,
-                  119,
-                  97,
-                  98,
-                  108,
-                  101
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "borrowable_config.mint",
-                "account": "Borrowable"
-              }
-            ]
-          }
+          "docs": [
+            "Borrowable config (owned by core program)"
+          ]
         },
         {
-          "name": "borrow_vault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  111,
-                  114,
-                  114,
-                  111,
-                  119,
-                  95,
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "borrowable_config.mint",
-                "account": "Borrowable"
-              }
-            ]
-          }
+          "name": "repay_vault",
+          "docs": [
+            "LP vault to transfer repaid tokens to"
+          ],
+          "writable": true
         },
         {
           "name": "user_token_account",

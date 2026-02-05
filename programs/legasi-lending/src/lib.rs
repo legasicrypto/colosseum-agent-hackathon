@@ -134,6 +134,12 @@ pub struct X402Receipt {
 pub mod legasi_lending {
     use super::*;
 
+    /// Initialize the lending vault for a borrowable asset
+    pub fn initialize_lending_vault(_ctx: Context<InitializeLendingVault>) -> Result<()> {
+        msg!("Lending vault initialized");
+        Ok(())
+    }
+
     /// Initialize a user position
     pub fn initialize_position(ctx: Context<InitializePosition>) -> Result<()> {
         let position = &mut ctx.accounts.position;
@@ -315,9 +321,10 @@ pub mod legasi_lending {
 
         require!(new_borrow_usd <= max_borrow, LegasiError::ExceedsLTV);
 
-        // Transfer tokens
-        let bump = ctx.accounts.protocol.bump;
-        let seeds: &[&[u8]] = &[b"protocol", &[bump]];
+        // Transfer tokens from lending vault
+        let mint = ctx.accounts.borrowable_config.mint;
+        let vault_bump = ctx.bumps.borrow_vault;
+        let seeds: &[&[u8]] = &[b"lending_vault", mint.as_ref(), &[vault_bump]];
 
         token::transfer(
             CpiContext::new_with_signer(
@@ -325,7 +332,7 @@ pub mod legasi_lending {
                 Transfer {
                     from: ctx.accounts.borrow_vault.to_account_info(),
                     to: ctx.accounts.user_token_account.to_account_info(),
-                    authority: ctx.accounts.protocol.to_account_info(),
+                    authority: ctx.accounts.borrow_vault.to_account_info(),
                 },
                 &[seeds],
             ),
@@ -390,7 +397,7 @@ pub mod legasi_lending {
                 ctx.accounts.token_program.to_account_info(),
                 Transfer {
                     from: ctx.accounts.user_token_account.to_account_info(),
-                    to: ctx.accounts.borrow_vault.to_account_info(),
+                    to: ctx.accounts.repay_vault.to_account_info(),
                     authority: ctx.accounts.owner.to_account_info(),
                 },
             ),
@@ -1008,6 +1015,24 @@ pub struct OfframpRequested {
 // ========== ACCOUNTS ==========
 
 #[derive(Accounts)]
+pub struct InitializeLendingVault<'info> {
+    #[account(
+        init,
+        payer = admin,
+        token::mint = mint,
+        token::authority = lending_vault,
+        seeds = [b"lending_vault", mint.key().as_ref()],
+        bump
+    )]
+    pub lending_vault: Account<'info, TokenAccount>,
+    pub mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub admin: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
 pub struct InitializePosition<'info> {
     #[account(
         init,
@@ -1053,15 +1078,20 @@ pub struct DepositToken<'info> {
 pub struct Borrow<'info> {
     #[account(mut, seeds = [b"position", owner.key().as_ref()], bump = position.bump, has_one = owner)]
     pub position: Account<'info, Position>,
-    #[account(seeds = [b"protocol"], bump = protocol.bump)]
+    /// Protocol state (owned by core program - no seeds validation)
     pub protocol: Account<'info, Protocol>,
-    #[account(seeds = [b"borrowable", borrowable_config.mint.as_ref()], bump = borrowable_config.bump)]
+    /// Borrowable config (owned by core program - no seeds validation)
     pub borrowable_config: Account<'info, Borrowable>,
-    #[account(mut, seeds = [b"borrow_vault", borrowable_config.mint.as_ref()], bump)]
+    /// Lending vault (owned by this program)
+    #[account(
+        mut,
+        seeds = [b"lending_vault", borrowable_config.mint.as_ref()],
+        bump
+    )]
     pub borrow_vault: Account<'info, TokenAccount>,
     #[account(mut)]
     pub user_token_account: Account<'info, TokenAccount>,
-    #[account(seeds = [b"price", sol_mint.key().as_ref()], bump = sol_price_feed.bump)]
+    /// Price feed (owned by core program - no seeds validation)
     pub sol_price_feed: Account<'info, PriceFeed>,
     /// CHECK: SOL mint
     pub sol_mint: UncheckedAccount<'info>,
@@ -1073,10 +1103,11 @@ pub struct Borrow<'info> {
 pub struct Repay<'info> {
     #[account(mut, seeds = [b"position", owner.key().as_ref()], bump = position.bump, has_one = owner)]
     pub position: Account<'info, Position>,
-    #[account(seeds = [b"borrowable", borrowable_config.mint.as_ref()], bump = borrowable_config.bump)]
+    /// Borrowable config (owned by core program)
     pub borrowable_config: Account<'info, Borrowable>,
-    #[account(mut, seeds = [b"borrow_vault", borrowable_config.mint.as_ref()], bump)]
-    pub borrow_vault: Account<'info, TokenAccount>,
+    /// LP vault to transfer repaid tokens to
+    #[account(mut)]
+    pub repay_vault: Account<'info, TokenAccount>,
     #[account(mut)]
     pub user_token_account: Account<'info, TokenAccount>,
     #[account(mut)]
