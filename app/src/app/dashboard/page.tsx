@@ -1,12 +1,32 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useLegasi } from "@/hooks/useLegasi";
 import { useLegasiDemo } from "@/hooks/useLegasiDemo";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+
+// Toast notification component
+function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 4000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className={`fixed bottom-6 right-6 z-50 px-6 py-4 rounded-xl shadow-2xl backdrop-blur-sm flex items-center gap-3 animate-slide-up ${
+      type === 'success' 
+        ? 'bg-green-500/90 text-white' 
+        : 'bg-red-500/90 text-white'
+    }`}>
+      <span className="text-xl">{type === 'success' ? '✅' : '❌'}</span>
+      <span className="font-medium">{message}</span>
+      <button onClick={onClose} className="ml-2 opacity-70 hover:opacity-100">✕</button>
+    </div>
+  );
+}
 
 // Wrapper for Suspense boundary
 export default function DashboardPage() {
@@ -82,6 +102,10 @@ function Dashboard() {
   const [repayAmount, setRepayAmount] = useState("");
   const [repayAsset, setRepayAsset] = useState<"USDC" | "EURC">("USDC");
   const [withdrawAmount, setWithdrawAmount] = useState("");
+  
+  // Toast notifications
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => setToast({ message, type });
   const [withdrawAsset, setWithdrawAsset] = useState<"SOL" | "cbBTC">("SOL");
   const [lpAmount, setLpAmount] = useState("");
   const [lpAsset, setLpAsset] = useState<"USDC" | "EURC">("USDC");
@@ -351,13 +375,13 @@ function Dashboard() {
                                 if (isDemoMode) {
                                   await demoLegasi.depositCollateral(parseFloat(depositAmount), depositAsset);
                                 } else {
-                                  console.log("Depositing", parseFloat(depositAmount), depositAsset);
                                   await realLegasi.depositSol(parseFloat(depositAmount));
                                 }
+                                showToast(`Deposited ${depositAmount} ${depositAsset}!`);
                                 setDepositAmount("");
                               } catch (err) {
                                 console.error("Deposit error:", err);
-                                alert(`Deposit failed: ${err instanceof Error ? err.message : String(err)}`);
+                                showToast(err instanceof Error ? err.message : "Deposit failed", 'error');
                               }
                             }}
                             disabled={legasi.loading || !depositAmount}
@@ -423,13 +447,13 @@ function Dashboard() {
                                 if (isDemoMode) {
                                   await demoLegasi.borrowAsset(parseFloat(borrowAmount), borrowAsset);
                                 } else {
-                                  console.log("Borrowing", parseFloat(borrowAmount), "USDC");
                                   await realLegasi.borrow(parseFloat(borrowAmount));
                                 }
+                                showToast(`Borrowed ${borrowAmount} ${borrowAsset}!`);
                                 setBorrowAmount("");
                               } catch (err) {
                                 console.error("Borrow error:", err);
-                                alert(`Borrow failed: ${err instanceof Error ? err.message : String(err)}`);
+                                showToast(err instanceof Error ? err.message : "Borrow failed", 'error');
                               }
                             }}
                             disabled={legasi.loading || !borrowAmount}
@@ -525,13 +549,13 @@ function Dashboard() {
                                     if (isDemoMode) {
                                       await demoLegasi.repay(parseFloat(repayAmount), repayAsset);
                                     } else {
-                                      console.log("Repaying", parseFloat(repayAmount), repayAsset);
                                       await realLegasi.repay(parseFloat(repayAmount), repayAsset);
                                     }
+                                    showToast(`Repaid ${repayAmount} ${repayAsset}!`);
                                     setRepayAmount("");
                                   } catch (err) {
                                     console.error("Repay error:", err);
-                                    alert(`Repay failed: ${err instanceof Error ? err.message : String(err)}`);
+                                    showToast(err instanceof Error ? err.message : "Repay failed", 'error');
                                   }
                                 }}
                                 disabled={legasi.loading || !repayAmount}
@@ -645,13 +669,13 @@ function Dashboard() {
                                 if (isDemoMode) {
                                   await demoLegasi.withdraw(actualAmount, withdrawAsset);
                                 } else {
-                                  console.log("Withdrawing", actualAmount, withdrawAsset);
                                   await realLegasi.withdrawSol(actualAmount);
                                 }
+                                showToast(`Withdrew ${actualAmount.toFixed(4)} ${withdrawAsset}!`);
                                 setWithdrawAmount("");
                               } catch (err) {
                                 console.error("Withdraw error:", err);
-                                alert(`Withdraw failed: ${err instanceof Error ? err.message : String(err)}`);
+                                showToast(err instanceof Error ? err.message : "Withdraw failed", 'error');
                               }
                             }}
                             disabled={legasi.loading || !withdrawAmount || userBalanceInAsset === 0 || (borrowedValue > 0 && maxWithdrawValue === 0)}
@@ -936,26 +960,24 @@ function Dashboard() {
                           if (lpTab === "deposit") {
                             if (isDemoMode) {
                               await demoLegasi.lpDeposit(amount, lpAsset);
-                              setLpPosition(prev => ({ ...prev, [lpAsset]: prev[lpAsset] + amount }));
                             } else {
-                              console.log("LP Deposit", amount, lpAsset);
                               await realLegasi.lpDeposit(amount, lpAsset);
-                              setLpPosition(prev => ({ ...prev, [lpAsset]: prev[lpAsset] + amount }));
                             }
+                            setLpPosition(prev => ({ ...prev, [lpAsset]: prev[lpAsset] + amount }));
+                            showToast(`Deposited ${amount} ${lpAsset} to LP!`);
                           } else {
                             if (isDemoMode) {
                               await demoLegasi.lpWithdraw(amount, lpAsset);
-                              setLpPosition(prev => ({ ...prev, [lpAsset]: Math.max(0, prev[lpAsset] - amount) }));
                             } else {
-                              console.log("LP Withdraw", amount, lpAsset);
                               await realLegasi.lpWithdraw(amount, lpAsset);
-                              setLpPosition(prev => ({ ...prev, [lpAsset]: Math.max(0, prev[lpAsset] - amount) }));
                             }
+                            setLpPosition(prev => ({ ...prev, [lpAsset]: Math.max(0, prev[lpAsset] - amount) }));
+                            showToast(`Withdrew ${amount} ${lpAsset} from LP!`);
                           }
                           setLpAmount("");
                         } catch (err) {
                           console.error("LP error:", err);
-                          alert(`LP action failed: ${err instanceof Error ? err.message : String(err)}`);
+                          showToast(err instanceof Error ? err.message : "LP action failed", 'error');
                         }
                       }}
                       disabled={legasi.loading || !lpAmount}
@@ -1040,6 +1062,9 @@ function Dashboard() {
           </>
         )}
       </div>
+      
+      {/* Toast notifications */}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 }

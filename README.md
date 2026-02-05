@@ -11,6 +11,19 @@
 
 ---
 
+## ⚡ Quick Start (Try it in 2 minutes!)
+
+1. **Get test tokens:** Go to [Faucet](https://agentic.legasi.io/faucet) → Connect Phantom (Devnet) → Claim
+2. **Need SOL for gas?** Use [Solana Faucet](https://faucet.solana.com)
+3. **Test the protocol:** Go to [Dashboard](https://agentic.legasi.io/dashboard)
+   - Deposit SOL as collateral
+   - Borrow USDC
+   - Repay and build reputation
+
+**Everything works on Solana Devnet — fully deployed and functional.**
+
+---
+
 ## 🤖 Why Agentic Credit?
 
 AI agents are becoming economic actors. They need to:
