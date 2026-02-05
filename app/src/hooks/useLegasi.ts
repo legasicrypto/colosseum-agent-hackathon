@@ -6,7 +6,10 @@ import { AnchorProvider } from "@coral-xyz/anchor";
 import { 
   LegasiClient, 
   createLegasiClient, 
-  Position 
+  Position,
+  USDC_MINT,
+  EURC_MINT,
+  CBBTC_MINT,
 } from "@/lib/legasi";
 
 export function useLegasi() {
@@ -145,15 +148,105 @@ export function useLegasi() {
     }
   }, [client]);
 
-  // LP Deposit
-  const lpDeposit = useCallback(async (amount: number) => {
+  // Repay
+  const repay = useCallback(async (amount: number, asset: "USDC" | "EURC") => {
     if (!client) throw new Error("Client not initialized");
     
     setLoading(true);
     setError(null);
     
     try {
-      const tx = await client.lpDeposit(amount);
+      const assetType = asset === "USDC" ? 2 : 3; // Match on-chain enum
+      const tx = await client.repay(amount, assetType);
+      // Refetch position
+      const newPosition = await client.getPosition(wallet.publicKey!);
+      setPosition(newPosition);
+      return tx;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [client, wallet.publicKey]);
+
+  // Withdraw SOL
+  const withdrawSol = useCallback(async (amount: number) => {
+    if (!client) throw new Error("Client not initialized");
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const tx = await client.withdrawSol(amount);
+      // Refetch position
+      const newPosition = await client.getPosition(wallet.publicKey!);
+      setPosition(newPosition);
+      return tx;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [client, wallet.publicKey]);
+
+  // Deposit Token (cbBTC)
+  const depositToken = useCallback(async (amount: number, asset: "cbBTC") => {
+    if (!client) throw new Error("Client not initialized");
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const mint = asset === "cbBTC" ? CBBTC_MINT : CBBTC_MINT;
+      const decimals = 8; // cbBTC has 8 decimals
+      const tx = await client.depositToken(amount, mint, decimals);
+      // Refetch position
+      const newPosition = await client.getPosition(wallet.publicKey!);
+      setPosition(newPosition);
+      return tx;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [client, wallet.publicKey]);
+
+  // LP Deposit
+  const lpDeposit = useCallback(async (amount: number, asset: "USDC" | "EURC" = "USDC") => {
+    if (!client) throw new Error("Client not initialized");
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const mint = asset === "USDC" ? USDC_MINT : EURC_MINT;
+      const tx = await client.lpDeposit(amount, mint);
+      return tx;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [client]);
+
+  // LP Withdraw
+  const lpWithdraw = useCallback(async (shares: number, asset: "USDC" | "EURC" = "USDC") => {
+    if (!client) throw new Error("Client not initialized");
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const mint = asset === "USDC" ? USDC_MINT : EURC_MINT;
+      const tx = await client.lpWithdraw(shares, mint);
       return tx;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
@@ -192,9 +285,13 @@ export function useLegasi() {
     // Actions
     initializePosition,
     depositSol,
+    depositToken,
     borrow,
+    repay,
+    withdrawSol,
     configureAgent,
     lpDeposit,
+    lpWithdraw,
     
     // Computed
     ltv: calculateLTV(),

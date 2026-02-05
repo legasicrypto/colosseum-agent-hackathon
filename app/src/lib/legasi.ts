@@ -18,6 +18,8 @@ export const LEGASI_LEVERAGE_PROGRAM_ID = new PublicKey("AVATHjGrdQ1KqtjHQ4gwRcu
 // Token Mints
 export const SOL_MINT = new PublicKey("So11111111111111111111111111111111111111112");
 export const USDC_MINT = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"); // Mainnet USDC
+export const EURC_MINT = new PublicKey("HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr"); // EURC
+export const CBBTC_MINT = new PublicKey("cbBTCn3RP3rP8Gx4hWS9oYmmFPSgZxPF8Zr1nK2GEok"); // cbBTC (placeholder)
 
 // Helper to get PDAs
 export function getProtocolPDA(): [PublicKey, number] {
@@ -220,34 +222,161 @@ export class LegasiClient {
     return tx;
   }
 
+  // Repay borrowed amount
+  async repay(amount: number, assetType: number): Promise<string> {
+    const [positionPDA] = getPositionPDA(this.provider.wallet.publicKey);
+    const [protocolPDA] = getProtocolPDA();
+    
+    const mint = assetType === 2 ? USDC_MINT : EURC_MINT;
+    
+    const borrowVaultPDA = PublicKey.findProgramAddressSync(
+      [Buffer.from("lp_vault"), mint.toBuffer()],
+      LEGASI_LP_PROGRAM_ID
+    )[0];
+    
+    const userTokenAta = await this.findAta(this.provider.wallet.publicKey, mint);
+    
+    const repayAmount = new BN(amount * 1_000_000); // 6 decimals
+    
+    const tx = await this.lendingProgram.methods
+      .repay(repayAmount)
+      .accounts({
+        position: positionPDA,
+        protocol: protocolPDA,
+        borrowableConfig: PublicKey.findProgramAddressSync(
+          [Buffer.from("borrowable"), mint.toBuffer()],
+          LEGASI_CORE_PROGRAM_ID
+        )[0],
+        borrowVault: borrowVaultPDA,
+        userTokenAccount: userTokenAta,
+        owner: this.provider.wallet.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .rpc();
+    
+    return tx;
+  }
+
+  // Withdraw SOL collateral
+  async withdrawSol(amount: number): Promise<string> {
+    const [positionPDA] = getPositionPDA(this.provider.wallet.publicKey);
+    const [protocolPDA] = getProtocolPDA();
+    const [priceFeedPDA] = getPriceFeedPDA(SOL_MINT);
+    
+    const solVaultPDA = PublicKey.findProgramAddressSync(
+      [Buffer.from("sol_vault"), positionPDA.toBuffer()],
+      LEGASI_LENDING_PROGRAM_ID
+    )[0];
+    
+    const lamports = new BN(amount * LAMPORTS_PER_SOL);
+    
+    const tx = await this.lendingProgram.methods
+      .withdrawSol(lamports)
+      .accounts({
+        position: positionPDA,
+        protocol: protocolPDA,
+        solVault: solVaultPDA,
+        solPriceFeed: priceFeedPDA,
+        owner: this.provider.wallet.publicKey,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc();
+    
+    return tx;
+  }
+
+  // Deposit SPL Token (cbBTC, etc.)
+  async depositToken(amount: number, mint: PublicKey, decimals: number): Promise<string> {
+    const [positionPDA] = getPositionPDA(this.provider.wallet.publicKey);
+    
+    const collateralVaultPDA = PublicKey.findProgramAddressSync(
+      [Buffer.from("collateral_vault"), positionPDA.toBuffer(), mint.toBuffer()],
+      LEGASI_LENDING_PROGRAM_ID
+    )[0];
+    
+    const userTokenAta = await this.findAta(this.provider.wallet.publicKey, mint);
+    
+    const tokenAmount = new BN(amount * Math.pow(10, decimals));
+    
+    const tx = await this.lendingProgram.methods
+      .depositToken(tokenAmount)
+      .accounts({
+        position: positionPDA,
+        collateralVault: collateralVaultPDA,
+        userTokenAccount: userTokenAta,
+        tokenMint: mint,
+        owner: this.provider.wallet.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc();
+    
+    return tx;
+  }
+
   // LP Deposit
-  async lpDeposit(amount: number): Promise<string> {
-    const [lpPoolPDA] = getLpPoolPDA(USDC_MINT);
+  async lpDeposit(amount: number, mint: PublicKey = USDC_MINT): Promise<string> {
+    const [lpPoolPDA] = getLpPoolPDA(mint);
     
     const lpTokenMintPDA = PublicKey.findProgramAddressSync(
-      [Buffer.from("lp_token"), USDC_MINT.toBuffer()],
+      [Buffer.from("lp_token"), mint.toBuffer()],
       LEGASI_LP_PROGRAM_ID
     )[0];
     
     const vaultPDA = PublicKey.findProgramAddressSync(
-      [Buffer.from("lp_vault"), USDC_MINT.toBuffer()],
+      [Buffer.from("lp_vault"), mint.toBuffer()],
       LEGASI_LP_PROGRAM_ID
     )[0];
     
-    const userUsdcAta = await this.findAta(this.provider.wallet.publicKey, USDC_MINT);
+    const userTokenAta = await this.findAta(this.provider.wallet.publicKey, mint);
     const userLpAta = await this.findAta(this.provider.wallet.publicKey, lpTokenMintPDA);
     
-    const usdcAmount = new BN(amount * 1_000_000);
+    const tokenAmount = new BN(amount * 1_000_000);
     
     const tx = await this.lpProgram.methods
-      .deposit(usdcAmount)
+      .deposit(tokenAmount)
       .accounts({
         lpPool: lpPoolPDA,
         lpTokenMint: lpTokenMintPDA,
         vault: vaultPDA,
-        userTokenAccount: userUsdcAta,
+        userTokenAccount: userTokenAta,
         userLpTokenAccount: userLpAta,
         depositor: this.provider.wallet.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .rpc();
+    
+    return tx;
+  }
+
+  // LP Withdraw
+  async lpWithdraw(shares: number, mint: PublicKey = USDC_MINT): Promise<string> {
+    const [lpPoolPDA] = getLpPoolPDA(mint);
+    
+    const lpTokenMintPDA = PublicKey.findProgramAddressSync(
+      [Buffer.from("lp_token"), mint.toBuffer()],
+      LEGASI_LP_PROGRAM_ID
+    )[0];
+    
+    const vaultPDA = PublicKey.findProgramAddressSync(
+      [Buffer.from("lp_vault"), mint.toBuffer()],
+      LEGASI_LP_PROGRAM_ID
+    )[0];
+    
+    const userTokenAta = await this.findAta(this.provider.wallet.publicKey, mint);
+    const userLpAta = await this.findAta(this.provider.wallet.publicKey, lpTokenMintPDA);
+    
+    const shareAmount = new BN(shares * 1_000_000);
+    
+    const tx = await this.lpProgram.methods
+      .withdraw(shareAmount)
+      .accounts({
+        lpPool: lpPoolPDA,
+        lpTokenMint: lpTokenMintPDA,
+        vault: vaultPDA,
+        userTokenAccount: userTokenAta,
+        userLpTokenAccount: userLpAta,
+        withdrawer: this.provider.wallet.publicKey,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .rpc();
