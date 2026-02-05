@@ -42,8 +42,8 @@ export default function FaucetPage() {
       {/* Header */}
       <header className="border-b border-[#0a2535] bg-[#001520]/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-[#FF4E00]">LEGASI</span>
+          <Link href="/" className="flex items-center gap-3">
+            <img src="/logo-white.png" alt="Legasi" className="h-8" />
             <span className="text-xs text-[#6a7a88] bg-[#0a2535] px-2 py-0.5 rounded">DEVNET</span>
           </Link>
           <div className="flex items-center gap-4">
@@ -59,7 +59,7 @@ export default function FaucetPage() {
       <main className="max-w-2xl mx-auto px-6 py-20">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">
-            🚰 <span className="text-[#FF4E00]">Devnet</span> Faucet
+            <span className="text-[#FF4E00]">Devnet</span> Faucet
           </h1>
           <p className="text-[#6a7a88] text-lg">
             Get test tokens to try out Legasi on Solana Devnet
