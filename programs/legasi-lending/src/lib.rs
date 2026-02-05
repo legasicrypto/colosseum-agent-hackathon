@@ -565,7 +565,7 @@ pub mod legasi_lending {
     /// Burns the borrowed tokens and initiates fiat transfer
     pub fn offramp_via_bridge(
         ctx: Context<OfframpViaBridge>,
-        request_id: u64, // Unique request ID for PDA
+        _request_id: u64, // Unique request ID for PDA
         amount: u64,
         destination_iban: String, // Bank account IBAN
         destination_name: String, // Recipient name
