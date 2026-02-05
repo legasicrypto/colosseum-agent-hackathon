@@ -117,14 +117,29 @@ function Dashboard() {
 
   const ltvBonus = reputationScore >= 400 ? 5 : reputationScore >= 200 ? 3 : reputationScore >= 100 ? 1 : 0;
   const maxLTV = 75 + ltvBonus;
+  const currentLTV = collateralValue > 0 ? (borrowedValue / collateralValue) * 100 : 0;
   const healthFactor = collateralValue > 0 ? (collateralValue * maxLTV / 100) / Math.max(borrowedValue, 1) : 0;
   const maxBorrow = Math.max(0, collateralValue * maxLTV / 100 - borrowedValue);
+  
+  // Calculate max withdrawable (must keep LTV under maxLTV after withdraw)
+  // Formula: (collateral - withdraw) * maxLTV/100 >= borrowed
+  // withdraw <= collateral - (borrowed * 100 / maxLTV)
+  const minCollateralRequired = borrowedValue > 0 ? (borrowedValue * 100 / maxLTV) : 0;
+  const maxWithdrawValue = Math.max(0, collateralValue - minCollateralRequired);
 
-  // Protocol stats (mock)
+  // Get borrowed asset types for repay filter
+  const borrowedAssetTypes = legasi.position?.borrows.map(b => b.assetType) || [];
+  const hasBorrowedUSDC = borrowedAssetTypes.includes(ASSET_TYPES.USDC);
+  const hasBorrowedEURC = borrowedAssetTypes.includes(ASSET_TYPES.EURC);
+
+  // Protocol stats (mock - coherent with 100% utilization)
+  // LP Pool = $2M, All borrowed = $2M, Collateral = $1.5M
   const protocolStats = {
-    tvl: 2_450_000,
-    totalBorrowed: 1_820_000,
-    utilization: 74.3,
+    lpPool: 2_000_000,
+    totalCollateral: 1_500_000,
+    totalBorrowed: 2_000_000,
+    get tvl() { return this.lpPool + this.totalCollateral; },
+    get utilization() { return (this.totalBorrowed / this.lpPool) * 100; },
   };
 
   // LP totals
@@ -173,18 +188,22 @@ function Dashboard() {
         )}
 
         {/* Protocol Stats Bar */}
-        <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-[#051525]/50 border border-[#0a2535] rounded-xl">
+        <div className="grid grid-cols-4 gap-4 mb-6 p-4 bg-[#051525]/50 border border-[#0a2535] rounded-xl">
           <div className="text-center">
             <div className="text-xs text-[#6a7a88] uppercase tracking-wider">Protocol TVL</div>
-            <div className="text-lg font-bold text-white">${(protocolStats.tvl / 1e6).toFixed(2)}M</div>
+            <div className="text-lg font-bold text-white">${((protocolStats.lpPool + protocolStats.totalCollateral) / 1e6).toFixed(1)}M</div>
           </div>
           <div className="text-center border-x border-[#0a2535]">
+            <div className="text-xs text-[#6a7a88] uppercase tracking-wider">LP Pool</div>
+            <div className="text-lg font-bold text-white">${(protocolStats.lpPool / 1e6).toFixed(1)}M</div>
+          </div>
+          <div className="text-center border-r border-[#0a2535]">
             <div className="text-xs text-[#6a7a88] uppercase tracking-wider">Total Borrowed</div>
-            <div className="text-lg font-bold text-white">${(protocolStats.totalBorrowed / 1e6).toFixed(2)}M</div>
+            <div className="text-lg font-bold text-white">${(protocolStats.totalBorrowed / 1e6).toFixed(1)}M</div>
           </div>
           <div className="text-center">
             <div className="text-xs text-[#6a7a88] uppercase tracking-wider">Utilization</div>
-            <div className="text-lg font-bold text-[#FF4E00]">{protocolStats.utilization}%</div>
+            <div className="text-lg font-bold text-[#FF4E00]">{((protocolStats.totalBorrowed / protocolStats.lpPool) * 100).toFixed(0)}%</div>
           </div>
         </div>
 
@@ -413,64 +432,92 @@ function Dashboard() {
                       <div>
                         <h3 className="text-xl font-semibold mb-2">Repay</h3>
                         <p className="text-sm text-[#6a7a88] mb-6">
-                          Repay your borrowed amount
+                          Repay your borrowed amount to unlock collateral
                         </p>
                         
-                        {/* Asset selector */}
-                        <div className="flex gap-2 mb-4">
-                          {(["USDC", "EURC"] as const).map((asset) => (
-                            <button
-                              key={asset}
-                              onClick={() => setRepayAsset(asset)}
-                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                repayAsset === asset
-                                  ? "bg-[#FF4E00]/20 text-[#FF4E00] border border-[#FF4E00]"
-                                  : "bg-[#001520] text-[#6a7a88] border border-[#0a2535] hover:border-[#FF4E00]/30"
-                              }`}
-                            >
-                              {asset}
-                            </button>
-                          ))}
-                        </div>
-
-                        <div className="flex gap-3 mb-4">
-                          <div className="flex-1 relative">
-                            <input
-                              type="number"
-                              placeholder="0.00"
-                              value={repayAmount}
-                              onChange={(e) => setRepayAmount(e.target.value)}
-                              className="w-full h-14 bg-[#001520] border border-[#0a2535] rounded-xl px-4 pr-20 text-white placeholder-[#3a4a58] focus:outline-none focus:border-[#FF4E00] transition-all"
-                            />
-                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6a7a88] text-sm font-medium">
-                              {repayAsset}
-                            </span>
+                        {/* No debt message */}
+                        {borrowedValue === 0 && (
+                          <div className="p-6 bg-[#001520]/50 rounded-xl text-center">
+                            <p className="text-[#6a7a88]">You have no outstanding debt to repay</p>
                           </div>
-                          <button
-                            onClick={() => setRepayAmount(borrowedValue.toFixed(2))}
-                            className="h-14 px-4 bg-[#0a2535] hover:bg-[#1a3545] text-[#FF4E00] font-medium rounded-xl transition-all"
-                          >
-                            MAX
-                          </button>
-                          <button
-                            onClick={async () => {
-                              if (isDemoMode) {
-                                await demoLegasi.repay(parseFloat(repayAmount), repayAsset);
-                              }
-                              setRepayAmount("");
-                            }}
-                            disabled={legasi.loading || !repayAmount || borrowedValue === 0}
-                            className="h-14 px-8 bg-[#4ade80] hover:bg-[#22c55e] text-black font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100"
-                          >
-                            Repay
-                          </button>
-                        </div>
+                        )}
                         
-                        <div className="p-4 bg-[#001520]/50 rounded-xl">
+                        {borrowedValue > 0 && (
+                          <>
+                            {/* Asset selector - only show borrowed assets */}
+                            <div className="flex gap-2 mb-4">
+                              {(["USDC", "EURC"] as const).filter(asset => 
+                                asset === "USDC" ? hasBorrowedUSDC : hasBorrowedEURC
+                              ).map((asset) => (
+                                <button
+                                  key={asset}
+                                  onClick={() => setRepayAsset(asset)}
+                                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                    repayAsset === asset
+                                      ? "bg-[#4ade80]/20 text-[#4ade80] border border-[#4ade80]"
+                                      : "bg-[#001520] text-[#6a7a88] border border-[#0a2535] hover:border-[#4ade80]/30"
+                                  }`}
+                                >
+                                  {asset}
+                                </button>
+                              ))}
+                            </div>
+
+                            <div className="flex gap-3 mb-4">
+                              <div className="flex-1 relative">
+                                <input
+                                  type="number"
+                                  placeholder="0.00"
+                                  value={repayAmount}
+                                  onChange={(e) => setRepayAmount(e.target.value)}
+                                  className="w-full h-14 bg-[#001520] border border-[#0a2535] rounded-xl px-4 pr-20 text-white placeholder-[#3a4a58] focus:outline-none focus:border-[#4ade80] transition-all"
+                                />
+                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6a7a88] text-sm font-medium">
+                                  {repayAsset}
+                                </span>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  // Get the borrowed amount for the selected asset
+                                  const assetBorrow = legasi.position?.borrows.find(b => 
+                                    b.assetType === (repayAsset === "USDC" ? ASSET_TYPES.USDC : ASSET_TYPES.EURC)
+                                  );
+                                  if (assetBorrow) {
+                                    const total = (assetBorrow.amount.toNumber() + assetBorrow.accruedInterest.toNumber()) / 1e6;
+                                    setRepayAmount(total.toFixed(2));
+                                  }
+                                }}
+                                className="h-14 px-4 bg-[#0a2535] hover:bg-[#1a3545] text-[#4ade80] font-medium rounded-xl transition-all"
+                              >
+                                MAX
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  if (isDemoMode) {
+                                    await demoLegasi.repay(parseFloat(repayAmount), repayAsset);
+                                  }
+                                  setRepayAmount("");
+                                }}
+                                disabled={legasi.loading || !repayAmount}
+                                className="h-14 px-8 bg-[#4ade80] hover:bg-[#22c55e] text-black font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100"
+                              >
+                                Repay
+                              </button>
+                            </div>
+                          </>
+                        )}
+                        
+                        <div className="p-4 bg-[#001520]/50 rounded-xl space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-[#6a7a88]">Total borrowed</span>
                             <span className="text-white font-semibold">${borrowedValue.toFixed(2)}</span>
                           </div>
+                          {borrowedValue > 0 && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-[#6a7a88]">Repay to unlock</span>
+                              <span className="text-[#4ade80]">${collateralValue.toFixed(2)} collateral</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -480,8 +527,18 @@ function Dashboard() {
                       <div>
                         <h3 className="text-xl font-semibold mb-2">Withdraw Collateral</h3>
                         <p className="text-sm text-[#6a7a88] mb-6">
-                          Withdraw your supplied collateral
+                          {borrowedValue > 0 
+                            ? `You can withdraw up to $${maxWithdrawValue.toFixed(2)} while maintaining your LTV under ${maxLTV}%`
+                            : "Withdraw your supplied collateral"
+                          }
                         </p>
+                        
+                        {/* Warning if has debt */}
+                        {borrowedValue > 0 && maxWithdrawValue === 0 && (
+                          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                            You must repay your debt before withdrawing collateral. Current LTV: {currentLTV.toFixed(1)}%
+                          </div>
+                        )}
                         
                         {/* Asset selector */}
                         <div className="flex gap-2 mb-4">
@@ -513,6 +570,17 @@ function Dashboard() {
                               {withdrawAsset}
                             </span>
                           </div>
+                          {maxWithdrawValue > 0 && (
+                            <button
+                              onClick={() => {
+                                const maxInAsset = maxWithdrawValue / PRICES[withdrawAsset];
+                                setWithdrawAmount(maxInAsset.toFixed(4));
+                              }}
+                              className="h-14 px-4 bg-[#0a2535] hover:bg-[#1a3545] text-[#FF4E00] font-medium rounded-xl transition-all"
+                            >
+                              MAX
+                            </button>
+                          )}
                           <button
                             onClick={async () => {
                               if (isDemoMode) {
@@ -520,7 +588,7 @@ function Dashboard() {
                               }
                               setWithdrawAmount("");
                             }}
-                            disabled={legasi.loading || !withdrawAmount || collateralValue === 0}
+                            disabled={legasi.loading || !withdrawAmount || collateralValue === 0 || maxWithdrawValue === 0}
                             className="h-14 px-8 bg-[#FF4E00] hover:bg-[#E64500] text-white font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100"
                           >
                             Withdraw
@@ -854,11 +922,15 @@ function Dashboard() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z" />
                       </svg>
                     </div>
-                    <h3 className="text-sm font-medium text-white">AI Agent Liquidity</h3>
+                    <h3 className="text-sm font-medium text-white">Agent-Native Protocol</h3>
                   </div>
-                  <p className="text-xs text-[#6a7a88] leading-relaxed">
-                    Your liquidity is used by AI agents for autonomous borrowing. Earn yield while powering the future of AI finance.
+                  <p className="text-xs text-[#6a7a88] leading-relaxed mb-2">
+                    AI agents are first-class citizens: they can borrow autonomously AND provide liquidity to earn yield.
                   </p>
+                  <div className="text-xs text-[#4ade80]/80 space-y-1">
+                    <div>• Agents as borrowers: autonomous credit</div>
+                    <div>• Agents as LPs: yield optimization</div>
+                  </div>
                 </div>
               </div>
             </div>
