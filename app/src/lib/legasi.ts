@@ -281,7 +281,6 @@ export class LegasiClient {
   // Withdraw SOL collateral
   async withdrawSol(amount: number): Promise<string> {
     const [positionPDA] = getPositionPDA(this.provider.wallet.publicKey);
-    const [protocolPDA] = getProtocolPDA();
     const [priceFeedPDA] = getPriceFeedPDA(SOL_MINT);
     
     const solVaultPDA = PublicKey.findProgramAddressSync(
@@ -295,9 +294,9 @@ export class LegasiClient {
       .withdrawSol(lamports)
       .accounts({
         position: positionPDA,
-        protocol: protocolPDA,
         solVault: solVaultPDA,
         solPriceFeed: priceFeedPDA,
+        solMint: SOL_MINT,
         owner: this.provider.wallet.publicKey,
         systemProgram: SystemProgram.programId,
       })
