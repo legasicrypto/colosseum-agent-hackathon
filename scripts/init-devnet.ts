@@ -20,14 +20,14 @@ import * as path from 'path';
 // Configuration
 const DEVNET_RPC = 'https://api.devnet.solana.com';
 
-// Program IDs (update after deployment)
+// Program IDs (deployed 2026-02-05)
 const PROGRAM_IDS = {
-  legasi_core: new PublicKey('5Mru5amfomEPqNiEULRuHpgAZyyENqyCeNnkSoh7QjLy'),
-  legasi_flash: new PublicKey('24zjRceYHjkyP8Nr4bc4q9T7TBbkf292gFocGp6SM5Fz'),
-  legasi_gad: new PublicKey('Ed7pfvjR1mRWmzHP3r1NvukESGr38xZKwpoQ5jGSAVad'),
-  legasi_lending: new PublicKey('DGRYqD9Hg9v27Fa9kLUUf3KY9hoprjBQp7y88qG9q88u'),
-  legasi_leverage: new PublicKey('G9iVPMnf4kiRKr59tn1t7m5W4WK2KveFLzANX4bbHtjA'),
-  legasi_lp: new PublicKey('4g7FgDLuxXJ7fRa57m8SV3gjznMZ9KUjcdJfg1b6BfPF'),
+  legasi_core: new PublicKey('4FW9iFaerNuX1GstRKSsWo9UfnTbjtqch3fEHkWMF1Uy'),
+  legasi_flash: new PublicKey('Fj8CJNK1gBAuNR7dFbKLDckSstKmZn8ihTGwFXxfY93m'),
+  legasi_gad: new PublicKey('89E84ALdDdGGNuJAxho2H45aC25kqNdGg7QtwTJ3pngK'),
+  legasi_lending: new PublicKey('9356RoSbLTzWE55ab6GktcTocaNhPuBEDZvsmqjkCZYw'),
+  legasi_leverage: new PublicKey('AVATHjGrdQ1KqtjHQ4gwRcuAYjwwScwgPsujLDpiA2g3'),
+  legasi_lp: new PublicKey('CTwY4VSeueesSBc95G38X3WJYPriJEzyxjcCaZAc5LbY'),
 };
 
 interface InitConfig {
@@ -125,7 +125,7 @@ async function initializeProtocol(config: InitConfig): Promise<void> {
     { commitment: 'confirmed' }
   );
   
-  const program = new anchor.Program(idl, PROGRAM_IDS.legasi_core, provider);
+  const program = new anchor.Program(idl, provider);
   
   // Find PDA for protocol state
   const [protocolPda] = PublicKey.findProgramAddressSync(

@@ -1,0 +1,13 @@
+{
+  "network": "devnet",
+  "timestamp": "2026-02-05T18:47:05.959Z",
+  "testUsdcMint": "4KHBEi7yWvgskkAy21ALQg9uDoLaqWy8CkwFikiw7YNk",
+  "programIds": {
+    "legasi_core": "4FW9iFaerNuX1GstRKSsWo9UfnTbjtqch3fEHkWMF1Uy",
+    "legasi_flash": "Fj8CJNK1gBAuNR7dFbKLDckSstKmZn8ihTGwFXxfY93m",
+    "legasi_gad": "89E84ALdDdGGNuJAxho2H45aC25kqNdGg7QtwTJ3pngK",
+    "legasi_lending": "9356RoSbLTzWE55ab6GktcTocaNhPuBEDZvsmqjkCZYw",
+    "legasi_leverage": "AVATHjGrdQ1KqtjHQ4gwRcuAYjwwScwgPsujLDpiA2g3",
+    "legasi_lp": "CTwY4VSeueesSBc95G38X3WJYPriJEzyxjcCaZAc5LbY"
+  }
+}
