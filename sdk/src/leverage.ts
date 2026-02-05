@@ -229,8 +229,9 @@ export class LeverageClient extends LegasiClient {
 
   /**
    * Get current leverage position details
+   * Note: Named differently from parent's getPosition() to avoid type conflict
    */
-  async getPosition(): Promise<{
+  async getLeverageStatus(): Promise<{
     isOpen: boolean;
     direction: 'long' | 'short' | null;
     leverage: number;
