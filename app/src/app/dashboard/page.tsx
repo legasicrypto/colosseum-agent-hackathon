@@ -347,12 +347,18 @@ function Dashboard() {
                           </div>
                           <button
                             onClick={async () => {
-                              if (isDemoMode) {
-                                await demoLegasi.depositCollateral(parseFloat(depositAmount), depositAsset);
-                              } else {
-                                await legasi.depositSol(parseFloat(depositAmount));
+                              try {
+                                if (isDemoMode) {
+                                  await demoLegasi.depositCollateral(parseFloat(depositAmount), depositAsset);
+                                } else {
+                                  console.log("Depositing", parseFloat(depositAmount), depositAsset);
+                                  await realLegasi.depositSol(parseFloat(depositAmount));
+                                }
+                                setDepositAmount("");
+                              } catch (err) {
+                                console.error("Deposit error:", err);
+                                alert(`Deposit failed: ${err instanceof Error ? err.message : String(err)}`);
                               }
-                              setDepositAmount("");
                             }}
                             disabled={legasi.loading || !depositAmount}
                             className="h-14 px-8 bg-[#FF4E00] hover:bg-[#E64500] text-white font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100"
@@ -418,7 +424,7 @@ function Dashboard() {
                                   await demoLegasi.borrowAsset(parseFloat(borrowAmount), borrowAsset);
                                 } else {
                                   console.log("Borrowing", parseFloat(borrowAmount), "USDC");
-                                  await legasi.borrow(parseFloat(borrowAmount));
+                                  await realLegasi.borrow(parseFloat(borrowAmount));
                                 }
                                 setBorrowAmount("");
                               } catch (err) {
@@ -515,10 +521,18 @@ function Dashboard() {
                               </button>
                               <button
                                 onClick={async () => {
-                                  if (isDemoMode) {
-                                    await demoLegasi.repay(parseFloat(repayAmount), repayAsset);
+                                  try {
+                                    if (isDemoMode) {
+                                      await demoLegasi.repay(parseFloat(repayAmount), repayAsset);
+                                    } else {
+                                      console.log("Repaying", parseFloat(repayAmount), repayAsset);
+                                      await realLegasi.repay(parseFloat(repayAmount), repayAsset);
+                                    }
+                                    setRepayAmount("");
+                                  } catch (err) {
+                                    console.error("Repay error:", err);
+                                    alert(`Repay failed: ${err instanceof Error ? err.message : String(err)}`);
                                   }
-                                  setRepayAmount("");
                                 }}
                                 disabled={legasi.loading || !repayAmount}
                                 className="h-14 px-8 bg-[#4ade80] hover:bg-[#22c55e] text-black font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100"
@@ -626,11 +640,19 @@ function Dashboard() {
                           )}
                           <button
                             onClick={async () => {
-                              if (isDemoMode) {
+                              try {
                                 const actualAmount = Math.min(withdrawAmountNum, maxWithdrawInAsset);
-                                await demoLegasi.withdraw(actualAmount, withdrawAsset);
+                                if (isDemoMode) {
+                                  await demoLegasi.withdraw(actualAmount, withdrawAsset);
+                                } else {
+                                  console.log("Withdrawing", actualAmount, withdrawAsset);
+                                  await realLegasi.withdrawSol(actualAmount);
+                                }
+                                setWithdrawAmount("");
+                              } catch (err) {
+                                console.error("Withdraw error:", err);
+                                alert(`Withdraw failed: ${err instanceof Error ? err.message : String(err)}`);
                               }
-                              setWithdrawAmount("");
                             }}
                             disabled={legasi.loading || !withdrawAmount || userBalanceInAsset === 0 || (borrowedValue > 0 && maxWithdrawValue === 0)}
                             className="h-14 px-8 bg-[#FF4E00] hover:bg-[#E64500] text-white font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100"
@@ -909,21 +931,36 @@ function Dashboard() {
                     )}
                     <button
                       onClick={async () => {
-                        const amount = parseFloat(lpAmount);
-                        if (lpTab === "deposit") {
-                          setLpPosition(prev => ({
-                            ...prev,
-                            [lpAsset]: prev[lpAsset] + amount
-                          }));
-                          if (isDemoMode) await demoLegasi.lpDeposit(amount, lpAsset);
-                        } else {
-                          setLpPosition(prev => ({
-                            ...prev,
-                            [lpAsset]: Math.max(0, prev[lpAsset] - amount)
-                          }));
-                          if (isDemoMode) await demoLegasi.lpWithdraw(amount, lpAsset);
+                        try {
+                          const amount = parseFloat(lpAmount);
+                          if (lpTab === "deposit") {
+                            setLpPosition(prev => ({
+                              ...prev,
+                              [lpAsset]: prev[lpAsset] + amount
+                            }));
+                            if (isDemoMode) {
+                              await demoLegasi.lpDeposit(amount, lpAsset);
+                            } else {
+                              console.log("LP Deposit", amount, lpAsset);
+                              await realLegasi.lpDeposit(amount, lpAsset);
+                            }
+                          } else {
+                            setLpPosition(prev => ({
+                              ...prev,
+                              [lpAsset]: Math.max(0, prev[lpAsset] - amount)
+                            }));
+                            if (isDemoMode) {
+                              await demoLegasi.lpWithdraw(amount, lpAsset);
+                            } else {
+                              console.log("LP Withdraw", amount, lpAsset);
+                              await realLegasi.lpWithdraw(amount, lpAsset);
+                            }
+                          }
+                          setLpAmount("");
+                        } catch (err) {
+                          console.error("LP error:", err);
+                          alert(`LP action failed: ${err instanceof Error ? err.message : String(err)}`);
                         }
-                        setLpAmount("");
                       }}
                       disabled={legasi.loading || !lpAmount}
                       className={`h-14 px-8 font-semibold rounded-xl transition-all hover:scale-105 disabled:bg-[#0a2535] disabled:text-[#3a4a58] disabled:hover:scale-100 ${
