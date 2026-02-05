@@ -155,11 +155,11 @@ function Dashboard() {
       
       {/* Demo Mode Banner */}
       {isDemoMode && (
-        <div className="bg-gradient-to-r from-[#FF4E00]/20 to-[#FF8C00]/20 border-b border-[#FF4E00]/30">
-          <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-center gap-2">
-            <span className="animate-pulse">🎮</span>
-            <span className="text-[#FF4E00] font-medium text-sm">DEMO MODE</span>
-            <span className="text-[#8a9aa8] text-sm">— Transactions are simulated</span>
+        <div className="bg-gradient-to-r from-[#FF4E00]/10 to-[#FF8C00]/10 border-b border-[#FF4E00]/20">
+          <div className="max-w-6xl mx-auto px-6 py-2.5 flex items-center justify-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-[#FF4E00] animate-pulse"></div>
+            <span className="text-[#FF4E00] font-medium text-xs tracking-wider uppercase">Demo Mode</span>
+            <span className="text-[#6a7a88] text-xs">Transactions are simulated</span>
           </div>
         </div>
       )}
@@ -189,26 +189,26 @@ function Dashboard() {
         </div>
 
         {/* Main Tab Selector - Borrow vs LP */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-3 mb-8">
           <button
             onClick={() => setMainTab("borrow")}
-            className={`flex-1 py-4 rounded-xl font-semibold transition-all ${
+            className={`flex-1 py-4 rounded-xl font-medium transition-all ${
               mainTab === "borrow"
-                ? "bg-[#FF4E00] text-white shadow-lg shadow-[#FF4E00]/20"
-                : "bg-[#051525] text-[#6a7a88] border border-[#0a2535] hover:border-[#FF4E00]/30"
+                ? "bg-[#FF4E00] text-white"
+                : "bg-[#051525]/80 text-[#8a9aa8] border border-[#0a2535] hover:border-[#1a3545] hover:text-white"
             }`}
           >
-            🏦 Borrow
+            Borrow
           </button>
           <button
             onClick={() => setMainTab("lp")}
-            className={`flex-1 py-4 rounded-xl font-semibold transition-all ${
+            className={`flex-1 py-4 rounded-xl font-medium transition-all ${
               mainTab === "lp"
-                ? "bg-[#FF4E00] text-white shadow-lg shadow-[#FF4E00]/20"
-                : "bg-[#051525] text-[#6a7a88] border border-[#0a2535] hover:border-[#FF4E00]/30"
+                ? "bg-[#FF4E00] text-white"
+                : "bg-[#051525]/80 text-[#8a9aa8] border border-[#0a2535] hover:border-[#1a3545] hover:text-white"
             }`}
           >
-            💧 Provide Liquidity
+            Provide Liquidity
           </button>
         </div>
 
