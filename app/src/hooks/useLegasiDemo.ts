@@ -5,17 +5,30 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 
-// Demo position data
+// We don't need MINTS anymore since we use assetType numbers
+
+// Asset types (matching on-chain enum)
+const ASSET_TYPES = {
+  SOL: 0,
+  cbBTC: 1,
+  USDC: 2,
+  EURC: 3,
+};
+
+// Demo position data (matching real Position type)
 interface DemoPosition {
   owner: PublicKey;
-  collaterals: { mint: PublicKey; amount: BN }[];
-  borrows: { mint: PublicKey; amount: BN; accruedInterest: BN; borrowedAt: BN }[];
+  collaterals: { assetType: number; amount: BN }[];
+  borrows: { assetType: number; amount: BN; accruedInterest: BN }[];
+  lastUpdate: BN;
+  lastGadCrank: BN;
+  gadEnabled: boolean;
+  totalGadLiquidatedUsd: BN;
   reputation: {
     successfulRepayments: number;
     totalRepaidUsd: BN;
     gadEvents: number;
     accountAgeDays: number;
-    lastUpdateSlot: BN;
   };
   bump: number;
 }
@@ -47,18 +60,21 @@ export function useLegasiDemo() {
     setError(null);
     
     try {
-      await delay(1500); // Simulate transaction time
+      await delay(1500);
       
       const newPosition: DemoPosition = {
         owner: wallet.publicKey,
         collaterals: [],
         borrows: [],
+        lastUpdate: new BN(Date.now() / 1000),
+        lastGadCrank: new BN(0),
+        gadEnabled: true,
+        totalGadLiquidatedUsd: new BN(0),
         reputation: {
           successfulRepayments: 0,
           totalRepaidUsd: new BN(0),
           gadEvents: 0,
           accountAgeDays: 1,
-          lastUpdateSlot: new BN(0),
         },
         bump: 255,
       };
@@ -74,8 +90,8 @@ export function useLegasiDemo() {
     }
   }, [wallet.publicKey]);
 
-  // Deposit SOL (demo)
-  const depositSol = useCallback(async (amount: number) => {
+  // Deposit collateral (SOL or cbBTC)
+  const depositCollateral = useCallback(async (amount: number, asset: "SOL" | "cbBTC") => {
     if (!wallet.publicKey || !position) throw new Error("Not ready");
     
     setLoading(true);
@@ -84,16 +100,17 @@ export function useLegasiDemo() {
     try {
       await delay(1500);
       
-      const solMint = new PublicKey("So11111111111111111111111111111111111111112");
-      const existingCollateral = position.collaterals.find(c => c.mint.equals(solMint));
+      const assetType = ASSET_TYPES[asset];
+      const decimals = asset === "SOL" ? 1e9 : 1e8;
+      const existingCollateral = position.collaterals.find(c => c.assetType === assetType);
       
       const newCollaterals = existingCollateral
         ? position.collaterals.map(c => 
-            c.mint.equals(solMint) 
-              ? { ...c, amount: c.amount.add(new BN(amount * 1e9)) }
+            c.assetType === assetType 
+              ? { ...c, amount: c.amount.add(new BN(amount * decimals)) }
               : c
           )
-        : [...position.collaterals, { mint: solMint, amount: new BN(amount * 1e9) }];
+        : [...position.collaterals, { assetType, amount: new BN(amount * decimals) }];
       
       setPosition({ ...position, collaterals: newCollaterals });
       return fakeTxHash();
@@ -106,8 +123,13 @@ export function useLegasiDemo() {
     }
   }, [wallet.publicKey, position]);
 
-  // Borrow USDC (demo)
-  const borrow = useCallback(async (amount: number) => {
+  // Legacy depositSol for compatibility
+  const depositSol = useCallback(async (amount: number) => {
+    return depositCollateral(amount, "SOL");
+  }, [depositCollateral]);
+
+  // Borrow asset (USDC or EURC)
+  const borrowAsset = useCallback(async (amount: number, asset: "USDC" | "EURC") => {
     if (!wallet.publicKey || !position) throw new Error("Not ready");
     
     setLoading(true);
@@ -116,23 +138,118 @@ export function useLegasiDemo() {
     try {
       await delay(1500);
       
-      const usdcMint = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
-      const existingBorrow = position.borrows.find(b => b.mint.equals(usdcMint));
+      const assetType = ASSET_TYPES[asset];
+      const existingBorrow = position.borrows.find(b => b.assetType === assetType);
       
       const newBorrows = existingBorrow
         ? position.borrows.map(b => 
-            b.mint.equals(usdcMint) 
+            b.assetType === assetType 
               ? { ...b, amount: b.amount.add(new BN(amount * 1e6)) }
               : b
           )
         : [...position.borrows, { 
-            mint: usdcMint, 
+            assetType, 
             amount: new BN(amount * 1e6),
             accruedInterest: new BN(0),
-            borrowedAt: new BN(Date.now() / 1000),
           }];
       
       setPosition({ ...position, borrows: newBorrows });
+      return fakeTxHash();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [wallet.publicKey, position]);
+
+  // Legacy borrow for compatibility
+  const borrow = useCallback(async (amount: number) => {
+    return borrowAsset(amount, "USDC");
+  }, [borrowAsset]);
+
+  // Repay borrowed amount
+  const repay = useCallback(async (amount: number, asset: "USDC" | "EURC") => {
+    if (!wallet.publicKey || !position) throw new Error("Not ready");
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await delay(1500);
+      
+      const assetType = ASSET_TYPES[asset];
+      const repayAmountBN = new BN(amount * 1e6);
+      
+      const newBorrows = position.borrows.map(b => {
+        if (b.assetType === assetType) {
+          const totalOwed = b.amount.add(b.accruedInterest);
+          if (repayAmountBN.gte(totalOwed)) {
+            return null; // Fully repaid
+          }
+          // Partial repay - first pay interest, then principal
+          if (repayAmountBN.gte(b.accruedInterest)) {
+            const remainingRepay = repayAmountBN.sub(b.accruedInterest);
+            return {
+              ...b,
+              amount: b.amount.sub(remainingRepay),
+              accruedInterest: new BN(0),
+            };
+          } else {
+            return {
+              ...b,
+              accruedInterest: b.accruedInterest.sub(repayAmountBN),
+            };
+          }
+        }
+        return b;
+      }).filter(Boolean) as DemoPosition["borrows"];
+      
+      // Update reputation
+      const newReputation = {
+        ...position.reputation,
+        successfulRepayments: position.reputation.successfulRepayments + 1,
+        totalRepaidUsd: position.reputation.totalRepaidUsd.add(repayAmountBN),
+      };
+      
+      setPosition({ ...position, borrows: newBorrows, reputation: newReputation });
+      return fakeTxHash();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [wallet.publicKey, position]);
+
+  // Withdraw collateral
+  const withdraw = useCallback(async (amount: number, asset: "SOL" | "cbBTC") => {
+    if (!wallet.publicKey || !position) throw new Error("Not ready");
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await delay(1500);
+      
+      const assetType = ASSET_TYPES[asset];
+      const decimals = asset === "SOL" ? 1e9 : 1e8;
+      const withdrawAmountBN = new BN(amount * decimals);
+      
+      const newCollaterals = position.collaterals.map(c => {
+        if (c.assetType === assetType) {
+          const newAmount = c.amount.sub(withdrawAmountBN);
+          if (newAmount.lte(new BN(0))) {
+            return null; // Fully withdrawn
+          }
+          return { ...c, amount: newAmount };
+        }
+        return c;
+      }).filter(Boolean) as DemoPosition["collaterals"];
+      
+      setPosition({ ...position, collaterals: newCollaterals });
       return fakeTxHash();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
@@ -153,7 +270,7 @@ export function useLegasiDemo() {
     setError(null);
     
     try {
-      await delay(1500);
+      await delay(1000);
       console.log("Demo: Agent configured", { dailyLimit, autoRepay, x402Enabled });
       return fakeTxHash();
     } catch (err) {
@@ -166,13 +283,31 @@ export function useLegasiDemo() {
   }, []);
 
   // LP Deposit (demo)
-  const lpDeposit = useCallback(async (amount: number) => {
+  const lpDeposit = useCallback(async (amount: number, asset?: "USDC" | "EURC") => {
     setLoading(true);
     setError(null);
     
     try {
       await delay(1500);
-      console.log("Demo: LP deposited", amount);
+      console.log("Demo: LP deposited", amount, asset || "USDC");
+      return fakeTxHash();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // LP Withdraw (demo)
+  const lpWithdraw = useCallback(async (amount: number, asset?: "USDC" | "EURC") => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await delay(1500);
+      console.log("Demo: LP withdrawn", amount, asset || "USDC");
       return fakeTxHash();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
@@ -187,13 +322,19 @@ export function useLegasiDemo() {
   const calculateLTV = useCallback(() => {
     if (!position) return 0;
     
+    const PRICES = { SOL: 100, cbBTC: 45000, USDC: 1, EURC: 1.08 };
+    
     const totalCollateralUsd = position.collaterals.reduce((sum, c) => {
-      const price = 100_000_000; // $100 per SOL
-      return sum + (c.amount.toNumber() * price / 1e9);
+      const isSol = c.assetType === ASSET_TYPES.SOL;
+      const price = isSol ? PRICES.SOL : PRICES.cbBTC;
+      const decimals = isSol ? 1e9 : 1e8;
+      return sum + (c.amount.toNumber() / decimals * price);
     }, 0);
     
     const totalBorrowUsd = position.borrows.reduce((sum, b) => {
-      return sum + b.amount.toNumber() + b.accruedInterest.toNumber();
+      const isUSDC = b.assetType === ASSET_TYPES.USDC;
+      const price = isUSDC ? PRICES.USDC : PRICES.EURC;
+      return sum + ((b.amount.toNumber() + b.accruedInterest.toNumber()) / 1e6 * price);
     }, 0);
     
     if (totalCollateralUsd === 0) return 0;
@@ -201,7 +342,7 @@ export function useLegasiDemo() {
   }, [position]);
 
   return {
-    client: wallet.publicKey ? {} : null, // Fake client
+    client: wallet.publicKey ? {} : null,
     position,
     loading,
     error,
@@ -210,9 +351,14 @@ export function useLegasiDemo() {
     // Actions
     initializePosition,
     depositSol,
+    depositCollateral,
     borrow,
+    borrowAsset,
+    repay,
+    withdraw,
     configureAgent,
     lpDeposit,
+    lpWithdraw,
     
     // Computed
     ltv: calculateLTV(),
