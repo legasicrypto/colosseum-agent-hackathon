@@ -240,7 +240,7 @@ export default function Home() {
       <footer className="py-10 px-6 border-t border-[#0a2535]">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3 text-[#5a6a78]">
-            <img src="/logo-white.png" alt="Legasi" className="w-6 h-6" />
+            <img src="/legasi-logo.svg" alt="Legasi" className="h-6 w-auto" />
             <span className="text-sm">Legasi Protocol</span>
           </div>
           <div className="flex gap-8 text-sm">

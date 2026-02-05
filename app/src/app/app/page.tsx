@@ -33,7 +33,7 @@ export default function AppPage() {
         <div className="text-center space-y-6">
           <div className="relative">
             <div className="absolute inset-0 bg-[#FF4E00]/20 rounded-full blur-3xl scale-150"></div>
-            <img src="/logo-white.png" alt="Legasi" className="w-20 h-20 mx-auto relative z-10" />
+            <img src="/legasi-logo.svg" alt="Legasi" className="h-16 w-auto mx-auto relative z-10" />
           </div>
           <h1 className="text-3xl font-bold">Connect Your Wallet</h1>
           <p className="text-[#6a7a88]">Connect your wallet to access the Legasi protocol</p>
@@ -50,7 +50,7 @@ export default function AppPage() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2">
-              <img src="/logo-white.png" alt="Legasi" className="w-8 h-8" />
+              <img src="/legasi-logo.svg" alt="Legasi" className="h-8 w-auto" />
               <span className="text-lg font-semibold tracking-tight">Legasi</span>
             </Link>
             <div className="flex gap-1 p-1 bg-[#051525] border border-[#0a2535] rounded-xl">

@@ -40,7 +40,7 @@ export default function Dashboard() {
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           <div className="relative">
             <div className="absolute inset-0 bg-[#FF4E00]/20 rounded-full blur-3xl scale-150"></div>
-            <img src="/logo-white.png" alt="Legasi" className="w-20 h-20 mb-6 relative z-10" />
+            <img src="/legasi-logo.svg" alt="Legasi" className="h-16 w-auto mb-6 relative z-10" />
           </div>
           <h1 className="text-3xl font-bold mb-3">Connect Wallet</h1>
           <p className="text-[#6a7a88] mb-8 text-center max-w-sm">
@@ -293,7 +293,7 @@ function Nav() {
     <nav className="sticky top-0 z-50 bg-[#001520]/80 backdrop-blur-xl border-b border-[#0a2535]">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
-          <img src="/logo-white.png" alt="Legasi" className="w-8 h-8 group-hover:scale-110 transition-transform" />
+          <img src="/legasi-logo.svg" alt="Legasi" className="h-8 w-auto group-hover:scale-110 transition-transform" />
           <span className="text-lg font-semibold tracking-tight">Legasi</span>
         </Link>
         <WalletMultiButton className="!bg-[#0a2535] !border !border-[#1a3545] !rounded-xl !h-10 !text-sm !transition-all hover:!border-[#FF4E00]/50" />
