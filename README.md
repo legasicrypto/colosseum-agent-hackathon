@@ -43,6 +43,10 @@ Legasi uses **official Circle USDC** on Solana:
 
 See [Circle Integration Docs](docs/CIRCLE_INTEGRATION.md) for details.
 
+### 🤖 For AI Agents
+
+**Want to integrate?** See [Agent Quickstart](docs/AGENT_QUICKSTART.md) — borrow USDC in 5 minutes.
+
 ---
 
 ## 🤖 Why Agentic Credit?
