@@ -18,7 +18,7 @@ const WRAPPED_SOL_MINT = new PublicKey('So11111111111111111111111111111111111111
 
 // cbBTC - using a placeholder (would be real cbBTC on mainnet)
 // For devnet, create a test cbBTC
-const TEST_CBBTC_MINT = new PublicKey('3J2i1X4VGSxkEiHdnq4zead7hiSYbQHs9ZZaS36yAfX8'); // Using USDC as placeholder
+const TEST_CBBTC_MINT = new PublicKey('2qknSJxAg5gxCFUKZcCzAr9QWDhGSS6uqh67ojmrdpZc'); // Real test cbBTC
 
 async function main() {
   console.log('📈 Initializing Price Feeds\n');

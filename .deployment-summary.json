@@ -24,6 +24,11 @@
       "lpPool": "34Gt8hwnMBqSrGLPgzD5tZ6PNCmaPv45KYBfuowve2q4",
       "lpToken": "EUaRiDhzes9erwRgYDhd3qbzE9jqbHV9XpZzW6UqV4bv",
       "vault": "E9Af3gXXH4tzvL9NpReMsKcDj3NrW6E1bSvsoDA4DMZc"
+    },
+    "cbbtc": {
+      "mint": "2qknSJxAg5gxCFUKZcCzAr9QWDhGSS6uqh67ojmrdpZc",
+      "decimals": 8,
+      "priceFeed": "5Snc6484jhyYi6skvdFSTcsNCCuunCVrUCPDRFgrgBh5"
     }
   },
   "priceFeeds": {

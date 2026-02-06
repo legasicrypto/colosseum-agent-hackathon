@@ -1,5 +1,16 @@
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import { createMint, getOrCreateAssociatedTokenAccount, mintTo } from '@solana/spl-token';
+/**
+ * Initialize test cbBTC token on devnet
+ * 
+ * Usage: npx ts-node scripts/init-cbbtc.ts
+ */
+
+import * as anchor from '@coral-xyz/anchor';
+import { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import {
+  createMint,
+  getOrCreateAssociatedTokenAccount,
+  mintTo,
+} from '@solana/spl-token';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -21,9 +32,9 @@ async function main() {
   console.log('Wallet:', payer.publicKey.toBase58());
   
   const balance = await connection.getBalance(payer.publicKey);
-  console.log('Balance:', balance / 1e9, 'SOL');
+  console.log('Balance:', balance / LAMPORTS_PER_SOL, 'SOL');
   
-  if (balance < 0.1 * 1e9) {
+  if (balance < 0.1 * LAMPORTS_PER_SOL) {
     console.error('Insufficient balance. Need at least 0.1 SOL');
     process.exit(1);
   }
@@ -77,10 +88,10 @@ async function main() {
   fs.writeFileSync('.cbbtc-token.json', JSON.stringify(output, null, 2));
   console.log('\n✅ Saved to .cbbtc-token.json');
   
-  console.log('\n=== Next steps ===');
-  console.log('1. Initialize cbBTC price feed:');
-  console.log('   npx ts-node scripts/init-price-feeds.ts --cbbtc', cbbtcMint.toBase58());
-  console.log('2. Register cbBTC as collateral');
+  console.log('\n=== Summary ===');
+  console.log('cbBTC Mint:', cbbtcMint.toBase58());
+  console.log('Your ATA:', ata.address.toBase58());
+  console.log('Balance: 10 cbBTC');
 }
 
 main().catch(console.error);
