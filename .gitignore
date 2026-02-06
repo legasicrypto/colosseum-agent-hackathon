@@ -19,3 +19,4 @@ test-ledger/
 video/out/
 tweet.js
 .cbbtc-token.json
+.circle-usdc-config.json

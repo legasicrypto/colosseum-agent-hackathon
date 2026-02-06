@@ -113,8 +113,9 @@ export default function FaucetPage() {
                 </div>
               )}
 
-              <div className="text-center text-sm text-[#6a7a88]">
+              <div className="text-center text-sm text-[#6a7a88] space-y-1">
                 <p>Need SOL for gas? Use the <a href="https://faucet.solana.com/" target="_blank" rel="noopener noreferrer" className="text-[#FF4E00] hover:underline">Solana Faucet</a></p>
+                <p>Need Circle USDC? Use the <a href="https://faucet.circle.com/" target="_blank" rel="noopener noreferrer" className="text-[#FF4E00] hover:underline">Circle Faucet</a></p>
               </div>
             </div>
           )}

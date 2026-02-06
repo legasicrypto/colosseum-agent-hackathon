@@ -27,12 +27,21 @@ open https://agentic.legasi.io/dashboard # 2. Deposit SOL → Borrow USDC → Se
 
 1. **Get test tokens:** Go to [Faucet](https://agentic.legasi.io/faucet) → Connect Phantom (Devnet) → Claim
 2. **Need SOL for gas?** Use [Solana Faucet](https://faucet.solana.com)
-3. **Test the protocol:** Go to [Dashboard](https://agentic.legasi.io/dashboard)
+3. **Need Circle USDC?** Use [Circle Faucet](https://faucet.circle.com/) (Select: Solana Devnet)
+4. **Test the protocol:** Go to [Dashboard](https://agentic.legasi.io/dashboard)
    - Deposit SOL as collateral
    - Borrow USDC
    - Repay and build reputation
 
 **Everything works on Solana Devnet — fully deployed and functional.**
+
+### 🔵 Circle USDC Integration
+
+Legasi uses **official Circle USDC** on Solana:
+- **Devnet:** `4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`
+- **CCTP Ready:** Cross-chain USDC transfers without wrapped tokens
+
+See [Circle Integration Docs](docs/CIRCLE_INTEGRATION.md) for details.
 
 ---
 

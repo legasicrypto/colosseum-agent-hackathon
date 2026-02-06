@@ -17,7 +17,7 @@ export const LEGASI_LEVERAGE_PROGRAM_ID = new PublicKey("AVATHjGrdQ1KqtjHQ4gwRcu
 
 // Token Mints (Devnet test tokens)
 export const SOL_MINT = new PublicKey("So11111111111111111111111111111111111111112");
-export const USDC_MINT = new PublicKey("3J2i1X4VGSxkEiHdnq4zead7hiSYbQHs9ZZaS36yAfX8"); // Test USDC
+export const USDC_MINT = new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"); // Circle USDC Devnet
 export const EURC_MINT = new PublicKey("6KeaPv9QA3VYaf62dfDzC785U8Cfa5VbsgtBH5ZWWf7v"); // Test EURC
 export const CBBTC_MINT = new PublicKey("3J2i1X4VGSxkEiHdnq4zead7hiSYbQHs9ZZaS36yAfX8"); // Placeholder (using USDC)
 
