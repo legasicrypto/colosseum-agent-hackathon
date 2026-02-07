@@ -1,15 +1,15 @@
 import { AbsoluteFill, Sequence, Audio, staticFile, interpolate, useCurrentFrame, Img, Easing } from 'remotion';
 import { KEYFRAMES, FPS, COLORS, DURATION_FRAMES, FONTS } from './config';
 
-// Subtitles data - synced with voiceover (original timings + actual audio durations)
+// Subtitles data - synced with voiceover
 const SUBTITLES = [
-  { start: 290, duration: 54, text: "Hey, I'm Bouliche." },                    // v1: 1.8s
-  { start: 397, duration: 50, text: "I connect my wallet..." },               // v2: 1.67s
-  { start: 480, duration: 63, text: "...enable agent mode..." },              // v3: 2.1s
-  { start: 540, duration: 89, text: "...and deposit some SOL as collateral." }, // v4: 2.95s
-  { start: 690, duration: 50, text: "Now I can borrow USDC instantly." },     // v5: 1.67s
-  { start: 840, duration: 101, text: "When I'm done, I repay and build reputation." }, // v6: 3.37s
-  { start: 962, duration: 206, text: "Under the hood: Solana smart contracts with on-chain reputation." }, // v8: 6.87s
+  { start: 380, duration: 54, text: "Hey, I'm Bouliche." },                    // v1: 1.8s
+  { start: 487, duration: 50, text: "I connect my wallet..." },               // v2: 1.67s
+  { start: 570, duration: 63, text: "...enable agent mode..." },              // v3: 2.1s
+  { start: 630, duration: 89, text: "...and deposit some SOL as collateral." }, // v4: 2.95s
+  { start: 780, duration: 50, text: "Now I can borrow USDC instantly." },     // v5: 1.67s
+  { start: 930, duration: 101, text: "When I'm done, I repay and build reputation." }, // v6: 3.37s
+  { start: 1052, duration: 206, text: "Under the hood: Solana smart contracts with on-chain reputation." }, // v8: 6.87s
   { start: KEYFRAMES.scene6.start, duration: 105, text: "Built by agents, for agents. That's Legasi." }, // v9: 3.5s
 ];
 
@@ -281,8 +281,8 @@ const SceneWithFade = ({ children, from, duration, fadeIn = 8, fadeOut = 8 }: {
 export const LegasiVideo: React.FC = () => {
   const frame = useCurrentFrame();
   
-  // Music ducking during voiceover (starts at v1 = 290 frames)
-  const voiceoverStart = 290; // v1 "Hey I'm Bouliche" starts here
+  // Music ducking during voiceover (starts at v1 = 380 frames after 3s shift)
+  const voiceoverStart = 380; // v1 "Hey I'm Bouliche" starts here
   
   // Duck music starting ~1 second before first voiceover
   const musicVolume = interpolate(
@@ -304,34 +304,34 @@ export const LegasiVideo: React.FC = () => {
         startFrom={0}
       />
       
-      {/* Voiceover - 9 phrases with EXACT timings from V */}
-      {/* v1: "Hey I'm Bouliche" @ SceneBouliche (9s + 0.7s = 290 frames) */}
-      <Sequence from={290}>
+      {/* Voiceover - 9 phrases with EXACT timings (+90 frames for 3s scene shift) */}
+      {/* v1: "Hey I'm Bouliche" @ SceneBouliche (12s + 0.7s = 380 frames) */}
+      <Sequence from={380}>
         <Audio src={staticFile('v1.mp3')} volume={1.0} />
       </Sequence>
-      {/* v2: "I connect my wallet" @ 13.24s = 397 frames */}
-      <Sequence from={397}>
+      {/* v2: "I connect my wallet" @ 16.24s = 487 frames (Scene4 now starts at 16s) */}
+      <Sequence from={487}>
         <Audio src={staticFile('v2.mp3')} volume={1.0} />
       </Sequence>
-      {/* v3: "enable agent mode" @ 16.01s = 480 frames */}
-      <Sequence from={480}>
+      {/* v3: "enable agent mode" @ 19.01s = 570 frames */}
+      <Sequence from={570}>
         <Audio src={staticFile('v3.mp3')} volume={1.0} />
       </Sequence>
-      {/* v4: "and deposit some SOL" @ 18.00s = 540 frames */}
-      <Sequence from={540}>
+      {/* v4: "and deposit some SOL" @ 21.00s = 630 frames */}
+      <Sequence from={630}>
         <Audio src={staticFile('v4.mp3')} volume={1.0} />
       </Sequence>
-      {/* v5: "Now I can borrow" @ borrow = 690 frames */}
-      <Sequence from={690}>
+      {/* v5: "Now I can borrow" @ borrow = 780 frames */}
+      <Sequence from={780}>
         <Audio src={staticFile('v5.mp3')} volume={1.0} />
       </Sequence>
-      {/* v6: "When I'm done running..." @ before repay = 840 frames */}
-      <Sequence from={840}>
+      {/* v6: "When I'm done running..." @ before repay = 930 frames */}
+      <Sequence from={930}>
         <Audio src={staticFile('v6.mp3')} volume={1.0} />
       </Sequence>
       {/* v7: "Debt cleared..." - REMOVED */}
-      {/* v8: "Under the hood..." @ 32.06s = 962 frames */}
-      <Sequence from={962}>
+      {/* v8: "Under the hood..." @ 35.06s = 1052 frames */}
+      <Sequence from={1052}>
         <Audio src={staticFile('v8.mp3')} volume={1.0} />
       </Sequence>
       {/* v9: "Built by agents..." @ Scene6 (OK) = 1350 frames */}
