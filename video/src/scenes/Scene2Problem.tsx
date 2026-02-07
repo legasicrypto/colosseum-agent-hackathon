@@ -56,11 +56,12 @@ export const Scene2Problem: React.FC = () => {
         transform: `translateY(${translateY}px)`, opacity,
       }}>
         <div style={{
-          fontFamily: FONTS.heading, fontSize: 68, fontWeight: 700,
-          textAlign: 'center', letterSpacing: '-0.03em',
+          fontFamily: FONTS.heading, fontSize: 80, fontWeight: 700,
+          textAlign: 'center', letterSpacing: '-0.02em',
         }}>
-          <GlitchText active={glitchActive}>Banks</GlitchText>
-          <span style={{ color: COLORS.white }}> don't serve agents.</span>
+          <span style={{ color: COLORS.white }}>Borrow. </span>
+          <GlitchText active={glitchActive}>Run.</GlitchText>
+          <span style={{ color: COLORS.white }}> Repay.</span>
         </div>
       </div>
       

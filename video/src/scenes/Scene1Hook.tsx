@@ -87,14 +87,14 @@ export const Scene1Hook: React.FC = () => {
             color: COLORS.white, opacity: mainTextOpacity,
             transform: `translateY(${mainTextY}px)`, display: 'inline-block',
           }}>
-            AI agents need
+            To scale, agents need
           </span>
           <span style={{
             opacity: creditOpacity,
             transform: `translateY(${creditY}px) scale(${creditScale})`,
             display: 'inline-block',
           }}>
-            <GlitchText active={glitchActive}>credit.</GlitchText>
+            <GlitchText active={glitchActive}>capital.</GlitchText>
           </span>
         </div>
       </div>

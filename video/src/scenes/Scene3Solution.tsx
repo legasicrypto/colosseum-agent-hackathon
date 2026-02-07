@@ -98,14 +98,15 @@ export const Scene3Solution: React.FC = () => {
           fontFamily: FONTS.heading, fontSize: 56, fontWeight: 700, letterSpacing: '-0.03em', textAlign: 'center',
           opacity: taglineOpacity, transform: `translateY(${taglineY}px)`, whiteSpace: 'nowrap',
         }}>
-          <GlitchText active={glitchActive}>Agentic Credit Infrastructure</GlitchText>
+          <span style={{ color: COLORS.white }}>Credit unlocks </span>
+          <GlitchText active={glitchActive}>autonomy.</GlitchText>
         </div>
         
         <div style={{
           fontFamily: FONTS.body, fontSize: 24, color: COLORS.white,
           opacity: subOpacity, transform: `translateY(${subY}px)`, letterSpacing: '0.01em', marginTop: 8,
         }}>
-          Autonomous lending for AI agents
+          Agentic Credit Infrastructure
         </div>
       </div>
       
