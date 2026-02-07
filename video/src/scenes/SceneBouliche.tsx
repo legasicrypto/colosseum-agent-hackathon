@@ -29,28 +29,28 @@ export const SceneBouliche: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ background: COLORS.background }}>
-      {/* Background glow */}
+      {/* Background glow - very soft, no hard edges */}
       <div style={{
         position: 'absolute',
-        width: 600, height: 600,
-        left: '50%', top: '45%',
+        width: 500, height: 500,
+        left: '50%', top: '50%',
         transform: 'translate(-50%, -50%)',
         borderRadius: '50%',
-        background: `radial-gradient(circle, ${COLORS.primary}30, transparent 60%)`,
-        filter: 'blur(80px)',
-        opacity: glowIntensity * opacity,
+        background: `radial-gradient(circle, ${COLORS.primary}15, transparent 50%)`,
+        filter: 'blur(120px)',
+        opacity: glowIntensity * opacity * 0.6,
       }} />
       
-      {/* Hologram container with aggressive edge fade */}
+      {/* Hologram container with very aggressive edge fade */}
       <div style={{
         position: 'absolute',
         left: '50%', top: '50%',
         transform: `translate(-50%, -50%) scale(${scale}) translateX(${glitchX}px) rotateY(${rotateY}deg)`,
         opacity: opacity * flicker,
         transformStyle: 'preserve-3d',
-        // Ellipse mask - centered lower to keep full head
-        maskImage: 'radial-gradient(ellipse 75% 85% at 50% 50%, black 40%, transparent 75%)',
-        WebkitMaskImage: 'radial-gradient(ellipse 75% 85% at 50% 50%, black 40%, transparent 75%)',
+        // Much more aggressive fade - starts at 20%, fully transparent at 55%
+        maskImage: 'radial-gradient(ellipse 60% 70% at 50% 45%, black 20%, transparent 55%)',
+        WebkitMaskImage: 'radial-gradient(ellipse 60% 70% at 50% 45%, black 20%, transparent 55%)',
       }}>
         {/* Chromatic aberration - cyan layer (stronger) */}
         <Img
