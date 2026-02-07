@@ -56,7 +56,7 @@ export const Scene2Problem: React.FC = () => {
         transform: `translateY(${translateY}px)`, opacity,
       }}>
         <div style={{
-          fontFamily: FONTS.heading, fontSize: 80, fontWeight: 700,
+          fontFamily: FONTS.heading, fontSize: 68, fontWeight: 700,
           textAlign: 'center', letterSpacing: '-0.02em',
         }}>
           <span style={{ color: COLORS.white }}>Borrow. </span>

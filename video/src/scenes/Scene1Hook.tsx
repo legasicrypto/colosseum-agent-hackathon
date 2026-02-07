@@ -80,7 +80,7 @@ export const Scene1Hook: React.FC = () => {
       
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
         <div style={{
-          fontFamily: FONTS.heading, fontSize: 72, fontWeight: 700,
+          fontFamily: FONTS.heading, fontSize: 68, fontWeight: 700,
           letterSpacing: '-0.03em', display: 'flex', alignItems: 'baseline', gap: 20,
         }}>
           <span style={{

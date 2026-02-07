@@ -91,11 +91,11 @@ export const Scene3Solution: React.FC = () => {
           transform: `scale(${logoScale})`, opacity: logoOpacity,
           filter: `drop-shadow(0 0 ${40 * logoGlow}px ${COLORS.primary}80)`,
         }}>
-          <Img src={staticFile('legasi-logo.svg')} style={{ height: 100, width: 'auto' }} />
+          <Img src={staticFile('legasi-logo.svg')} style={{ height: 120, width: 'auto' }} />
         </div>
         
         <div style={{ 
-          fontFamily: FONTS.heading, fontSize: 56, fontWeight: 700, letterSpacing: '-0.03em', textAlign: 'center',
+          fontFamily: FONTS.heading, fontSize: 68, fontWeight: 700, letterSpacing: '-0.03em', textAlign: 'center',
           opacity: taglineOpacity, transform: `translateY(${taglineY}px)`, whiteSpace: 'nowrap',
         }}>
           <span style={{ color: COLORS.white }}>Credit unlocks </span>

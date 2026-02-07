@@ -1,5 +1,62 @@
-import { AbsoluteFill, Sequence, Audio, staticFile, interpolate, useCurrentFrame, Img } from 'remotion';
+import { AbsoluteFill, Sequence, Audio, staticFile, interpolate, useCurrentFrame, Img, Easing } from 'remotion';
 import { KEYFRAMES, FPS, COLORS, DURATION_FRAMES, FONTS } from './config';
+
+// Subtitles data - synced with voiceover
+const SUBTITLES = [
+  { start: 380, duration: 60, text: "Hey, I'm Bouliche." },
+  { start: 487, duration: 50, text: "I connect my wallet..." },
+  { start: 570, duration: 45, text: "...enable agent mode..." },
+  { start: 630, duration: 50, text: "...and deposit some SOL as collateral." },
+  { start: 780, duration: 55, text: "Now I can borrow USDC instantly." },
+  { start: 930, duration: 70, text: "When I'm done, I repay and build reputation." },
+  { start: 1052, duration: 80, text: "Under the hood: Solana smart contracts with on-chain reputation." },
+  { start: KEYFRAMES.scene6.start, duration: 90, text: "Built by agents, for agents. That's Legasi." },
+];
+
+// Cyber-style subtitles component
+const Subtitles = () => {
+  const frame = useCurrentFrame();
+  
+  // Find active subtitle
+  const activeSub = SUBTITLES.find(s => frame >= s.start && frame < s.start + s.duration);
+  if (!activeSub) return null;
+  
+  const localFrame = frame - activeSub.start;
+  const fadeIn = interpolate(localFrame, [0, 8], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const fadeOut = interpolate(localFrame, [activeSub.duration - 8, activeSub.duration], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const opacity = Math.min(fadeIn, fadeOut);
+  const slideY = interpolate(localFrame, [0, 10], [10, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.quad) });
+  
+  return (
+    <div style={{
+      position: 'absolute',
+      bottom: 80,
+      left: 0,
+      right: 0,
+      display: 'flex',
+      justifyContent: 'center',
+      zIndex: 95,
+      opacity,
+      transform: `translateY(${slideY}px)`,
+    }}>
+      <div style={{
+        fontFamily: FONTS.mono,
+        fontSize: 26,
+        fontWeight: 500,
+        color: COLORS.primary,
+        textShadow: `0 0 20px ${COLORS.primary}60, 0 0 40px ${COLORS.primary}30, 0 2px 4px rgba(0,0,0,0.8)`,
+        letterSpacing: '0.02em',
+        padding: '12px 24px',
+        background: 'rgba(0, 21, 32, 0.7)',
+        borderRadius: 8,
+        border: `1px solid ${COLORS.primary}30`,
+        backdropFilter: 'blur(8px)',
+      }}>
+        {activeSub.text}
+      </div>
+    </div>
+  );
+};
 import { Scene1Hook } from './scenes/Scene1Hook';
 import { Scene2Problem } from './scenes/Scene2Problem';
 import { Scene3Solution } from './scenes/Scene3Solution';
@@ -356,6 +413,9 @@ export const LegasiVideo: React.FC = () => {
       <Sequence from={KEYFRAMES.scene6.start} durationInFrames={KEYFRAMES.scene6.end - KEYFRAMES.scene6.start}>
         <StellarParticles layer="front" />
       </Sequence>
+      
+      {/* Subtitles */}
+      <Subtitles />
       
       {/* Global overlays */}
       <ScanLines />
