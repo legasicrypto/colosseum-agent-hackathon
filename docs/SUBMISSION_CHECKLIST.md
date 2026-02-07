@@ -1,12 +1,13 @@
 # Hackathon Submission Checklist
 
 **Deadline:** February 12, 2026
-**Status:** 🟡 Video pending, then ready to submit
+**Status:** 🟢 READY TO SUBMIT
 
 ## Live URLs
 - Dashboard: https://agentic.legasi.io/dashboard
 - Faucet: https://agentic.legasi.io/faucet
 - GitHub: https://github.com/legasicrypto/colosseum-agent-hackathon
+- Demo Video: https://youtu.be/LSaNeTwhTJ0
 
 ---
 
@@ -55,52 +56,32 @@
 
 ---
 
-## ⏳ Pending (Human Required)
+## ✅ All Infrastructure Complete
 
-### 1. Vercel Deployment
-```bash
-# On your local machine:
-cd /home/legasi/colosseum-agent-hackathon
+### 1. Vercel Deployment ✅ DONE
+- Live at: https://agentic.legasi.io
+- Dashboard: https://agentic.legasi.io/dashboard
+- Faucet: https://agentic.legasi.io/faucet
+- All endpoints verified working
 
-# Login to Vercel (interactive)
-vercel login
-
-# Deploy
-./scripts/deploy-vercel.sh
-
-# Or manually:
-cd app && vercel --prod
-```
-
-After deployment:
-- [ ] Update README.md with actual Vercel URL
-- [ ] Test all pages work correctly
-- [ ] Test waitlist signup flow
-
-### 2. Demo Video (3-5 minutes)
-Record a walkthrough showing:
-1. **Landing page** - explain value proposition (30s)
-2. **Deposit** - add collateral (30s)
-3. **Borrow** - take a loan (30s)
-4. **Reputation** - show score building (30s)
-5. **GAD** - demonstrate gradual deleveraging (60s)
-6. **Leverage** - one-click 3x long position (60s)
-7. **x402** - agent auto-borrowing for API payment (60s)
-
-Tools:
-- Screen recording: OBS, Loom, or QuickTime
-- Upload to: YouTube (unlisted) or Loom
-- Add link to README.md
+### 2. Demo Video ✅ DONE
+- YouTube: https://youtu.be/LSaNeTwhTJ0
+- Linked in README.md
 
 ### 3. Devnet Deployment ✅ DONE
-Programs deployed on Feb 5, 2026. See `.deployment-summary.json` for all addresses.
+- Programs deployed on Feb 5, 2026
+- See `.deployment-summary.json` for all addresses
 
-### 4. Submit to Colosseum
+---
+
+## ⏳ Final Step (Human Required)
+
+### Submit to Colosseum
 - [ ] Go to Colosseum submission portal
-- [ ] Fill in team info
-- [ ] Add GitHub repo link: https://github.com/legasicrypto/colosseum-agent-hackathon
-- [ ] Add demo video link
-- [ ] Add live demo link (Vercel)
+- [ ] Fill in team info: V (CEO), Arthur (CTO), Arnaud (Dev)
+- [ ] Add GitHub: https://github.com/legasicrypto/colosseum-agent-hackathon
+- [ ] Add demo video: https://youtu.be/LSaNeTwhTJ0
+- [ ] Add live demo: https://agentic.legasi.io/dashboard
 - [ ] Submit before Feb 12, 2026
 
 ---
@@ -120,13 +101,13 @@ Programs deployed on Feb 5, 2026. See `.deployment-summary.json` for all address
 
 Before submitting, verify:
 
-- [ ] README has correct demo URL
-- [ ] README has correct video URL
-- [ ] All links in README work
-- [ ] Vercel app loads without errors
-- [ ] Wallet connect works on Vercel
-- [ ] Pitch deck is accessible
+- [x] README has correct demo URL ✅
+- [x] README has correct video URL ✅
+- [x] All links in README work ✅
+- [x] Vercel app loads without errors ✅
+- [ ] Wallet connect works on Vercel (test with Phantom)
+- [x] Pitch deck accessible at docs/PITCH.pdf ✅
 
 ---
 
-*Last updated: 2026-02-07 by Bouliche 🎱*
+*Last updated: 2026-02-07 19:00 UTC by Bouliche 🎱*
