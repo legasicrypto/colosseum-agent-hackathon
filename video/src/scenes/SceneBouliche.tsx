@@ -48,9 +48,9 @@ export const SceneBouliche: React.FC = () => {
         transform: `translate(-50%, -50%) scale(${scale}) translateX(${glitchX}px) rotateY(${rotateY}deg)`,
         opacity: opacity * flicker,
         transformStyle: 'preserve-3d',
-        // Much more aggressive fade - starts at 20%, fully transparent at 55%
-        maskImage: 'radial-gradient(ellipse 60% 70% at 50% 45%, black 20%, transparent 55%)',
-        WebkitMaskImage: 'radial-gradient(ellipse 60% 70% at 50% 45%, black 20%, transparent 55%)',
+        // Balanced fade - visible but smooth edges
+        maskImage: 'radial-gradient(ellipse 68% 78% at 50% 47%, black 30%, transparent 65%)',
+        WebkitMaskImage: 'radial-gradient(ellipse 68% 78% at 50% 47%, black 30%, transparent 65%)',
       }}>
         {/* Chromatic aberration - cyan layer (stronger) */}
         <Img
