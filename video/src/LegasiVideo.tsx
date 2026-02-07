@@ -41,16 +41,11 @@ const Subtitles = () => {
     }}>
       <div style={{
         fontFamily: FONTS.mono,
-        fontSize: 26,
-        fontWeight: 500,
+        fontSize: 28,
+        fontWeight: 600,
         color: COLORS.primary,
-        textShadow: `0 0 20px ${COLORS.primary}60, 0 0 40px ${COLORS.primary}30, 0 2px 4px rgba(0,0,0,0.8)`,
+        textShadow: `0 0 20px ${COLORS.primary}80, 0 0 40px ${COLORS.primary}50, 0 2px 6px rgba(0,0,0,0.9)`,
         letterSpacing: '0.02em',
-        padding: '12px 24px',
-        background: 'rgba(0, 21, 32, 0.7)',
-        borderRadius: 8,
-        border: `1px solid ${COLORS.primary}30`,
-        backdropFilter: 'blur(8px)',
       }}>
         {activeSub.text}
       </div>
