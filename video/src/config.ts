@@ -1,7 +1,7 @@
 // Legasi Demo Video - Solana Style Config
 
 export const FPS = 30;
-export const DURATION_SECONDS = 55;
+export const DURATION_SECONDS = 52;
 export const DURATION_FRAMES = FPS * DURATION_SECONDS;
 
 // Colors - Legasi + Solana accent
@@ -46,15 +46,15 @@ export const FONTS = {
   mono: '"SF Mono", "JetBrains Mono", monospace',
 };
 
-// Scene timing (frames) - Slower intro pacing
+// Scene timing (frames) - FAST pacing
 export const KEYFRAMES = {
-  scene1: { start: 0, end: 4 * FPS },             // 0-4s: Hook (4s)
-  scene2: { start: 4 * FPS, end: 8 * FPS },       // 4-8s: Cycle (4s)
-  scene3: { start: 8 * FPS, end: 12 * FPS },      // 8-12s: Solution (4s)
-  sceneBouliche: { start: 12 * FPS, end: 16 * FPS }, // 12-16s: Bouliche hologram (4s)
-  scene4: { start: 16 * FPS, end: 36 * FPS },     // 16-36s: Demo (20s)
-  scene5: { start: 35 * FPS, end: 48 * FPS },     // 35-48s: Code
-  scene6: { start: 48 * FPS, end: 55 * FPS },     // 48-55s: CTA (7s for voiceover)
+  scene1: { start: 0, end: 3 * FPS },             // 0-3s: Hook
+  scene2: { start: 3 * FPS, end: 6 * FPS },       // 3-6s: Problem
+  scene3: { start: 6 * FPS, end: 9 * FPS },       // 6-9s: Solution (shortened more)
+  sceneBouliche: { start: 9 * FPS, end: 13 * FPS }, // 9-13s: Bouliche hologram (4s)
+  scene4: { start: 13 * FPS, end: 33 * FPS },     // 13-33s: Demo (20s)
+  scene5: { start: 32 * FPS, end: 45 * FPS },     // 32-45s: Code
+  scene6: { start: 45 * FPS, end: 52 * FPS },     // 45-52s: CTA (7s for voiceover)
 };
 
 // Phantom wallet icon
