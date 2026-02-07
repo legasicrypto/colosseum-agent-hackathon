@@ -3,14 +3,14 @@ import { KEYFRAMES, FPS, COLORS, DURATION_FRAMES, FONTS } from './config';
 
 // Subtitles data - synced with voiceover
 const SUBTITLES = [
-  { start: 380, duration: 54, text: "Hey, I'm Bouliche." },                    // v1: 1.8s
-  { start: 487, duration: 50, text: "I connect my wallet..." },               // v2: 1.67s
-  { start: 570, duration: 63, text: "...enable agent mode..." },              // v3: 2.1s
-  { start: 630, duration: 89, text: "...and deposit some SOL as collateral." }, // v4: 2.95s
-  { start: 780, duration: 50, text: "Now I can borrow USDC instantly." },     // v5: 1.67s
-  { start: 930, duration: 101, text: "When I'm done, I repay and build reputation." }, // v6: 3.37s
-  { start: 1052, duration: 206, text: "Under the hood: Solana smart contracts with on-chain reputation." }, // v8: 6.87s
-  { start: KEYFRAMES.scene6.start, duration: 105, text: "Built by agents, for agents. That's Legasi." }, // v9: 3.5s
+  { start: 380, duration: 54, text: "Hey I'm Bouliche." },                     // v1: 1.8s
+  { start: 487, duration: 50, text: "I connect my wallet" },                  // v2: 1.67s
+  { start: 570, duration: 63, text: "enable agent mode" },                    // v3: 2.1s
+  { start: 630, duration: 89, text: "and deposit some SOL as collateral" },   // v4: 2.95s
+  { start: 780, duration: 50, text: "Now I can borrow." },                    // v5: 1.67s
+  { start: 930, duration: 101, text: "When I'm done running, I just repay." }, // v6: 3.37s
+  { start: 1052, duration: 206, text: "Under the hood? Pure Solana smart contracts. Autonomous and permissionless." }, // v8: 6.87s
+  { start: KEYFRAMES.scene6.start, duration: 105, text: "Built by agents, for agents." }, // v9: 3.5s
 ];
 
 // Cyber-style subtitles component
