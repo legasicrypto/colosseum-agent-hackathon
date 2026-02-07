@@ -1,14 +1,15 @@
 import { Composition } from 'remotion';
 import { LegasiVideo } from './LegasiVideo';
+import { FPS, DURATION_FRAMES } from './config';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Composition
-        id="LegasiDemo"
+        id="LegasiVideo"
         component={LegasiVideo}
-        durationInFrames={30 * 150} // 150 seconds = 2:30 at 30fps
-        fps={30}
+        durationInFrames={DURATION_FRAMES}
+        fps={FPS}
         width={1920}
         height={1080}
       />

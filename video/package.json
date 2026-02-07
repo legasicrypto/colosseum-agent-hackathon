@@ -1,15 +1,15 @@
 {
   "name": "legasi-video",
   "version": "1.0.0",
-  "description": "Legasi Demo Video - Generated with Remotion",
+  "description": "Legasi product video built with Remotion",
   "scripts": {
     "start": "remotion studio",
-    "build": "remotion render LegasiDemo out/legasi-demo.mp4",
-    "preview": "remotion preview"
+    "build": "remotion render LegasiVideo out/video.mp4",
+    "upgrade": "remotion upgrade"
   },
   "dependencies": {
+    "@remotion/bundler": "^4.0.0",
     "@remotion/cli": "^4.0.0",
-    "@remotion/player": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "remotion": "^4.0.0"

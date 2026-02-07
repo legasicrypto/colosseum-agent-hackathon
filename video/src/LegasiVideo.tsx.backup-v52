@@ -3,7 +3,6 @@ import { KEYFRAMES, FPS, COLORS, DURATION_FRAMES, FONTS } from './config';
 import { Scene1Hook } from './scenes/Scene1Hook';
 import { Scene2Problem } from './scenes/Scene2Problem';
 import { Scene3Solution } from './scenes/Scene3Solution';
-import { SceneBouliche } from './scenes/SceneBouliche';
 import { Scene4AppDemo } from './scenes/Scene4AppDemo';
 import { Scene5Code } from './scenes/Scene5Code';
 import { Scene6CTA } from './scenes/Scene6CTA';
@@ -134,32 +133,32 @@ const ZoomContainer = ({ children, from, duration, startScale = 1, endScale = 1.
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
   );
   
-  // 3D rotation effect - EXTREME cinematic movement
+  // 3D rotation effect - subtle continuous movement
   const rotateX = enable3D ? interpolate(
     localFrame,
     [0, duration * 0.3, duration * 0.7, duration],
-    [0, 8, 12, 6],
+    [0, 4, 6, 3],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
   ) : 0;
   
   const rotateY = enable3D ? interpolate(
     localFrame,
     [0, duration * 0.4, duration * 0.8, duration],
-    [0, -6, -10, -4],
+    [0, -3, -5, -2],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
   ) : 0;
   
-  // Strong parallax shift - "coming at you" effect
+  // Subtle parallax shift
   const translateZ = enable3D ? interpolate(
     localFrame,
     [0, duration],
-    [0, 120],
+    [0, 50],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
   ) : 0;
   
   return (
     <AbsoluteFill style={{ 
-      perspective: enable3D ? '800px' : 'none',
+      perspective: enable3D ? '1200px' : 'none',
       perspectiveOrigin: 'center center',
     }}>
       <AbsoluteFill style={{ 
@@ -224,8 +223,8 @@ const SceneWithFade = ({ children, from, duration, fadeIn = 8, fadeOut = 8 }: {
 export const LegasiVideo: React.FC = () => {
   const frame = useCurrentFrame();
   
-  // Music ducking during voiceover (starts at v1 = 290 frames)
-  const voiceoverStart = 290; // v1 "Hey I'm Bouliche" starts here
+  // Music ducking during voiceover (starts at v1 = 303 frames)
+  const voiceoverStart = 303; // v1 "Hey I'm Bouliche" starts here
   
   // Duck music starting ~1 second before first voiceover
   const musicVolume = interpolate(
@@ -248,28 +247,28 @@ export const LegasiVideo: React.FC = () => {
       />
       
       {/* Voiceover - 9 phrases with EXACT timings from V */}
-      {/* v1: "Hey I'm Bouliche" @ SceneBouliche (9s + 0.7s = 290 frames) */}
-      <Sequence from={290}>
+      {/* v1: "Hey I'm Bouliche" (trimmed) @ 10.1s = 303 frames (ends at 357, before v2 starts at 367) */}
+      <Sequence from={303}>
         <Audio src={staticFile('v1.mp3')} volume={1.0} />
       </Sequence>
-      {/* v2: "I connect my wallet" @ 13.24s = 397 frames (Scene4 now starts at 13s) */}
-      <Sequence from={397}>
+      {/* v2: "I connect my wallet" @ 12.24s = 367 frames */}
+      <Sequence from={367}>
         <Audio src={staticFile('v2.mp3')} volume={1.0} />
       </Sequence>
-      {/* v3: "enable agent mode" @ 16.01s = 480 frames */}
-      <Sequence from={480}>
+      {/* v3: "enable agent mode" @ 15.01s = 450 frames */}
+      <Sequence from={450}>
         <Audio src={staticFile('v3.mp3')} volume={1.0} />
       </Sequence>
-      {/* v4: "and deposit some SOL" @ 18.00s = 540 frames */}
-      <Sequence from={540}>
+      {/* v4: "and deposit some SOL" @ 17.00s = 510 frames */}
+      <Sequence from={510}>
         <Audio src={staticFile('v4.mp3')} volume={1.0} />
       </Sequence>
-      {/* v5: "Now I can borrow" @ borrow = 690 frames */}
-      <Sequence from={690}>
+      {/* v5: "Now I can borrow" @ borrow (OK) = 660 frames */}
+      <Sequence from={660}>
         <Audio src={staticFile('v5.mp3')} volume={1.0} />
       </Sequence>
-      {/* v6: "When I'm done running..." @ before repay = 840 frames */}
-      <Sequence from={840}>
+      {/* v6: "When I'm done running..." @ before 29s = 810 frames */}
+      <Sequence from={810}>
         <Audio src={staticFile('v6.mp3')} volume={1.0} />
       </Sequence>
       {/* v7: "Debt cleared..." - REMOVED */}
@@ -302,41 +301,33 @@ export const LegasiVideo: React.FC = () => {
         <Scene2Problem />
       </SceneWithFade>
       
-      {/* Scene 3: Solution (shortened) */}
+      {/* Scene 3: Solution */}
       <SceneWithFade 
         from={KEYFRAMES.scene3.start} 
         duration={KEYFRAMES.scene3.end - KEYFRAMES.scene3.start}
         fadeIn={6}
-        fadeOut={10}
+        fadeOut={6}
       >
         <Scene3Solution />
       </SceneWithFade>
       
-      {/* Scene Bouliche: Hologram intro */}
-      <SceneWithFade 
-        from={KEYFRAMES.sceneBouliche.start} 
-        duration={KEYFRAMES.sceneBouliche.end - KEYFRAMES.sceneBouliche.start}
-        fadeIn={0}
-        fadeOut={0}
-      >
-        <SceneBouliche />
-      </SceneWithFade>
-      
-      {/* Scene 4: App Demo - EXTREME 3D zoom */}
+      {/* Scene 4: App Demo - cinematic 3D zoom */}
       <Sequence from={KEYFRAMES.scene4.start} durationInFrames={KEYFRAMES.scene4.end - KEYFRAMES.scene4.start}>
-        <ZoomContainer from={KEYFRAMES.scene4.start} duration={KEYFRAMES.scene4.end - KEYFRAMES.scene4.start} startScale={1} endScale={2.0} enable3D>
+        <ZoomContainer from={KEYFRAMES.scene4.start} duration={KEYFRAMES.scene4.end - KEYFRAMES.scene4.start} startScale={1} endScale={1.6} enable3D>
           <Scene4AppDemo />
         </ZoomContainer>
       </Sequence>
       
-      {/* Scene 5: Code - internal 3D zoom (4x + rotation) */}
+      {/* Scene 5: Code - cinematic 3D zoom */}
       <SceneWithFade 
         from={KEYFRAMES.scene5.start} 
         duration={KEYFRAMES.scene5.end - KEYFRAMES.scene5.start}
         fadeIn={6}
         fadeOut={6}
       >
-        <Scene5Code />
+        <ZoomContainer from={KEYFRAMES.scene5.start} duration={KEYFRAMES.scene5.end - KEYFRAMES.scene5.start} startScale={1} endScale={1.6} enable3D>
+          <Scene5Code />
+        </ZoomContainer>
       </SceneWithFade>
       
       {/* Scene 6: CTA */}
@@ -349,8 +340,8 @@ export const LegasiVideo: React.FC = () => {
         <Scene6CTA />
       </SceneWithFade>
       
-      {/* Front particles for text scenes only (Scene1, 2, 3, Bouliche, 6) */}
-      <Sequence from={KEYFRAMES.scene1.start} durationInFrames={KEYFRAMES.sceneBouliche.end - KEYFRAMES.scene1.start}>
+      {/* Front particles for text scenes only (Scene1, 2, 3, 6) */}
+      <Sequence from={KEYFRAMES.scene1.start} durationInFrames={KEYFRAMES.scene3.end - KEYFRAMES.scene1.start}>
         <StellarParticles layer="front" />
       </Sequence>
       <Sequence from={KEYFRAMES.scene6.start} durationInFrames={KEYFRAMES.scene6.end - KEYFRAMES.scene6.start}>
