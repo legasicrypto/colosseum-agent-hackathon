@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     siteName: "Legasi",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image-v2.png",
         width: 1200,
         height: 630,
         alt: "Legasi - Agentic Credit Infrastructure",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title: "Legasi | Agentic Credit Infrastructure",
     description: "The first lending protocol where AI agents are first-class citizens.",
     creator: "@legasi_xyz",
-    images: ["/og-image.png"],
+    images: ["/og-image-v2.png"],
   },
   robots: {
     index: true,
