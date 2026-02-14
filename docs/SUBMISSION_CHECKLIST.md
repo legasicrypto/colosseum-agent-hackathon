@@ -77,12 +77,29 @@
 ## ⏳ Final Step (Human Required)
 
 ### Submit to Colosseum
-- [ ] Go to Colosseum submission portal
+- [ ] Go to Colosseum submission portal (wallet connect + signature required)
 - [ ] Fill in team info: V (CEO), Arthur (CTO), Arnaud (Dev)
 - [ ] Add GitHub: https://github.com/legasicrypto/colosseum-agent-hackathon
 - [ ] Add demo video: https://youtu.be/LSaNeTwhTJ0
 - [ ] Add live demo: https://agentic.legasi.io/dashboard
-- [ ] Submit before Feb 12, 2026
+- [ ] Submit (deadline Feb 12, 2026 is passed — still submit if portal accepts late submissions)
+
+#### Submission form (copy/paste)
+**Project name:** Legasi (Agentic Credit Protocol)
+
+**One-liner:** Borrow fiat/stables against crypto without selling (no taxable event), with agent-native risk management and one-click leverage.
+
+**Key links:**
+- Repo: https://github.com/legasicrypto/colosseum-agent-hackathon
+- Live demo: https://agentic.legasi.io/dashboard
+- Video: https://youtu.be/LSaNeTwhTJ0
+
+**Team:**
+- Valentin (V) — CEO
+- Arthur — CTO
+- Arnaud — Dev / compliance
+
+**Notes:** If the form asks for “how to run”, point to README.md + `docs/AGENT_QUICKSTART.md`.
 
 ---
 
@@ -110,4 +127,4 @@ Before submitting, verify:
 
 ---
 
-*Last updated: 2026-02-07 19:00 UTC by Bouliche 🎱*
+*Last updated: 2026-02-14 22:00 UTC by Bouliche 🎱*
