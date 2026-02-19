@@ -248,14 +248,16 @@ console.log({
 
 ## 🔗 Devnet Addresses
 
+Source of truth: `.deployment-summary.json` (repo root).
+
 | Program | Address |
 |---------|---------|
 | legasi-core | `4FW9iFaerNuX1GstRKSsWo9UfnTbjtqch3fEHkWMF1Uy` |
-| legasi-flash | `Fj8CJNK1gBAuNR7dFbKLDckSstKmZn8ihTGwFXxfY93m` |
+| legasi-lending | `9356RoSbLTzWE55ab6GktcTocaNhPuBEDZvsmqjkCZYw` |
+| legasi-lp | `CTwY4VSeueesSBc95G38X3WJYPriJEzyxjcCaZAc5LbY` |
 | legasi-gad | `89E84ALdDdGGNuJAxho2H45aC25kqNdGg7QtwTJ3pngK` |
-| legasi-lending | *deploying...* |
-| legasi-lp | *deploying...* |
-| legasi-leverage | *deploying...* |
+| legasi-flash | `Fj8CJNK1gBAuNR7dFbKLDckSstKmZn8ihTGwFXxfY93m` |
+| legasi-leverage | `AVATHjGrdQ1KqtjHQ4gwRcuAYjwwScwgPsujLDpiA2g3` |
 
 ---
 

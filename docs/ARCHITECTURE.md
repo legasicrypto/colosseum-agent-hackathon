@@ -256,13 +256,15 @@ FlashRepaid { borrower, mint, amount, fee }
 ## Deployment
 
 ### Devnet Addresses
+Source of truth: `.deployment-summary.json`.
+
 ```
 legasi_core:     4FW9iFaerNuX1GstRKSsWo9UfnTbjtqch3fEHkWMF1Uy
-legasi_lending:  (pending)
+legasi_lending:  9356RoSbLTzWE55ab6GktcTocaNhPuBEDZvsmqjkCZYw
 legasi_lp:       CTwY4VSeueesSBc95G38X3WJYPriJEzyxjcCaZAc5LbY
 legasi_gad:      89E84ALdDdGGNuJAxho2H45aC25kqNdGg7QtwTJ3pngK
 legasi_flash:    Fj8CJNK1gBAuNR7dFbKLDckSstKmZn8ihTGwFXxfY93m
-legasi_leverage: (pending)
+legasi_leverage: AVATHjGrdQ1KqtjHQ4gwRcuAYjwwScwgPsujLDpiA2g3
 ```
 
 ### Mainnet
